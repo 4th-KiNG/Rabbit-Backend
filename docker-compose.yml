@@ -1,11 +1,13 @@
 services:
   db:
-    image: postgres
+    image: postgres:15
     container_name: db
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
   pgadmin:
@@ -16,5 +18,9 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "8080:80"
+
     depends_on:
       - db
+
+volumes:
+  pgdata:
