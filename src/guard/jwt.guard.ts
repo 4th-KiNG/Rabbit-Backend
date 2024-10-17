@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class JwtGuard implements CanActivate {
     constructor(private readonly jwtService: JwtService,
-        private configService: ConfigService
+        private readonly configService: ConfigService
     ) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
