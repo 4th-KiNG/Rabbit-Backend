@@ -19,9 +19,9 @@ export class UserService {
         const newUserPassword = dto.password;
 
         if (await this.getByEmail(newUserEmail))
-            throw new BadRequestException("данная почта уже используется!")
+            throw new BadRequestException('Данная почта уже используется!')
         if (await this.getByUsername(newUserUsername))
-            throw new BadRequestException("пользователь с таким именем уже существует!");
+            throw new BadRequestException('Пользователь с таким именем уже существует!');
 
         const salt = randomBytes(8).toString('hex');
         const hash = (await scrypt(newUserPassword, salt, 32)) as Buffer;
