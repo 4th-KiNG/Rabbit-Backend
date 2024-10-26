@@ -24,7 +24,7 @@ export class AuthService {
   async signIn(dto: SignInDto) {
     const user = await this.userService.getByEmail(dto.email);
     if (!user) throw new BadRequestException("Неверные данные для входа");
-
+    //Дешифрование пароля лучше вынести отдельно в папку utils в виде функции
     const [salt, storedHash] = user.password.split(".");
     const hash = (await scrypt(dto.password, salt, 32)) as Buffer;
     if (storedHash != hash.toString("hex"))

@@ -19,19 +19,21 @@ export class UserService {
     const newUserEmail = dto.email;
     const newUserUsername = dto.username;
     const newUserPassword = dto.password;
-
+    //Могу ошибаться, но по моему если почта будет не уникальной,
+    //то операция создания просто ошибку выдаст, так что хз нужна ли эта проверка
     if (await this.getByEmail(newUserEmail))
       throw new BadRequestException("Данная почта уже используется!");
+    //Имя в нашем случае не является уникальным, так что можно эту проверку убрать
     if (await this.getByUsername(newUserUsername))
       throw new BadRequestException(
         "Пользователь с таким именем уже существует!",
       );
-
+    //Шифрование тоже лучше вынести в папку utils в виде функции
     const salt = randomBytes(8).toString("hex");
     const hash = (await scrypt(newUserPassword, salt, 32)) as Buffer;
 
     const encryptedPassword = salt + "." + hash.toString("hex");
-
+    //Тут await не нужен
     const newUser = await this.userRepository.create({
       username: newUserUsername,
       email: newUserEmail,
