@@ -19,7 +19,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-  ) {}
+  ) { }
 
   @Post("signup")
   @ApiOperation({ summary: "Sign Up" })
@@ -41,9 +41,7 @@ export class AuthController {
   async getInfo(@Request() req) {
     const id = req["user"]["sub"];
     const user = await this.userService.getById(id);
-    //На эту строчку ESLint ругается, что password не используется нигде
-    //Можешь написать просто delte user.password и потом просто user возвращать
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    delete user.password;
+    return user;
   }
 }
