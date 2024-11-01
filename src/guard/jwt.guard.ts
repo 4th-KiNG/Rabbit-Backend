@@ -2,7 +2,8 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
+  HttpException,
+  HttpStatus,
 } from "@nestjs/common";
 
 import { ConfigService } from "@nestjs/config";
@@ -24,7 +25,10 @@ export class JwtGuard implements CanActivate {
       null,
     ];
     if (type !== "Bearer" || !token)
-      throw new UnauthorizedException("Ошибка при авторизации пользователя");
+      throw new HttpException(
+        "Ошибка при авторизации пользователя",
+        HttpStatus.BAD_REQUEST,
+      );
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -32,7 +36,10 @@ export class JwtGuard implements CanActivate {
       });
       request["user"] = payload;
     } catch {
-      throw new UnauthorizedException("Ошибка при авторизации пользователя");
+      throw new HttpException(
+        "Ошибка при авторизации пользователя",
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return true;

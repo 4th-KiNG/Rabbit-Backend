@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { CreateUserDto } from "src/dtos/create-user.dto";
 import { SignInDto } from "src/dtos/signin.dto";
@@ -23,12 +23,19 @@ export class AuthService {
 
   async signIn(dto: SignInDto) {
     const user = await this.userService.getByEmail(dto.email);
-    if (!user) throw new BadRequestException("Неверные данные для входа");
+    if (!user)
+      throw new HttpException(
+        "Такого пользователя не существует",
+        HttpStatus.NOT_FOUND,
+      );
     //Дешифрование пароля лучше вынести отдельно в папку utils в виде функции
     const [salt, storedHash] = user.password.split(".");
     const hash = (await scrypt(dto.password, salt, 32)) as Buffer;
     if (storedHash != hash.toString("hex"))
-      throw new BadRequestException("Неверные данные для входа");
+      throw new HttpException(
+        "Неверные данные для входа",
+        HttpStatus.BAD_REQUEST,
+      );
 
     const payload = { sub: user.id, username: user.username };
     return { access_token: await this.jwtService.signAsync(payload) };

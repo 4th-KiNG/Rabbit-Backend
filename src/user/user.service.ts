@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
@@ -22,11 +22,15 @@ export class UserService {
     //Могу ошибаться, но по моему если почта будет не уникальной,
     //то операция создания просто ошибку выдаст, так что хз нужна ли эта проверка
     if (await this.getByEmail(newUserEmail))
-      throw new BadRequestException("Данная почта уже используется!");
+      throw new HttpException(
+        "Данная почта уже используется!",
+        HttpStatus.BAD_REQUEST,
+      );
     //Имя в нашем случае не является уникальным, так что можно эту проверку убрать
     if (await this.getByUsername(newUserUsername))
-      throw new BadRequestException(
+      throw new HttpException(
         "Пользователь с таким именем уже существует!",
+        HttpStatus.BAD_REQUEST,
       );
     //Шифрование тоже лучше вынести в папку utils в виде функции
     const salt = randomBytes(8).toString("hex");
