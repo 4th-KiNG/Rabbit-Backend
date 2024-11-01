@@ -15,8 +15,6 @@ export class UserController {
   @UseGuards(JwtGuard)
   async getUserByUsername(@Param("username") username: string) {
     const user = await this.userService.getByUsername(username);
-    //id удалять не нужно
-    delete user.id;
     delete user.email;
     delete user.password;
     return user;

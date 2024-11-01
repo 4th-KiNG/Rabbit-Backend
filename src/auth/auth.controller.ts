@@ -11,6 +11,7 @@ import { CreateUserDto, SignInDto } from "src/dtos/user.dto";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { JwtGuard } from "src/guard/jwt.guard";
 import { UserService } from "src/user/user.service";
+import { Request as Request_type } from "express";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -37,8 +38,7 @@ export class AuthController {
     summary: "Returns all information about user except for password",
   })
   @UseGuards(JwtGuard)
-  //Нужно указать тип Request импортированный из express
-  async getInfo(@Request() req) {
+  async getInfo(@Request() req: Request_type) {
     const id = req["user"]["sub"];
     const user = await this.userService.getById(id);
     delete user.password;
