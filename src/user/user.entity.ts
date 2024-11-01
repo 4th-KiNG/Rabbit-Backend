@@ -4,7 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
-  //Тут тоже можно убрать уникальность
+
   @Column({ unique: true })
   username: string;
 

@@ -2,12 +2,8 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
-import { CreateUserDto } from "src/dtos/create-user.dto";
-import { randomBytes, scrypt as _scrypt } from "crypto";
-import { promisify } from "util";
-
-const scrypt = promisify(_scrypt); // callback -> promise
-
+import { CreateUserDto } from "src/dtos/user.dto";
+import { encryptPassword } from "src/utils/auth.utils";
 @Injectable()
 export class UserService {
   constructor(
@@ -19,29 +15,23 @@ export class UserService {
     const newUserEmail = dto.email;
     const newUserUsername = dto.username;
     const newUserPassword = dto.password;
-    //Могу ошибаться, но по моему если почта будет не уникальной,
-    //то операция создания просто ошибку выдаст, так что хз нужна ли эта проверка
+
     if (await this.getByEmail(newUserEmail))
       throw new HttpException(
-        "Данная почта уже используется!",
+        "Пользователь с такой почтой уже существует!",
         HttpStatus.BAD_REQUEST,
       );
-    //Имя в нашем случае не является уникальным, так что можно эту проверку убрать
+
     if (await this.getByUsername(newUserUsername))
       throw new HttpException(
-        "Пользователь с таким именем уже существует!",
+        "Пользователь с таким username уже существует!",
         HttpStatus.BAD_REQUEST,
       );
-    //Шифрование тоже лучше вынести в папку utils в виде функции
-    const salt = randomBytes(8).toString("hex");
-    const hash = (await scrypt(newUserPassword, salt, 32)) as Buffer;
 
-    const encryptedPassword = salt + "." + hash.toString("hex");
-    //Тут await не нужен
-    const newUser = await this.userRepository.create({
+    const newUser = this.userRepository.create({
       username: newUserUsername,
       email: newUserEmail,
-      password: encryptedPassword,
+      password: await encryptPassword(newUserPassword),
     });
     return await this.userRepository.save(newUser);
   }

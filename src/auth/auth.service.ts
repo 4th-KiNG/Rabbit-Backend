@@ -1,12 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { CreateUserDto } from "src/dtos/create-user.dto";
-import { SignInDto } from "src/dtos/signin.dto";
+import { CreateUserDto, SignInDto } from "src/dtos/user.dto";
 import { UserService } from "src/user/user.service";
-import { scrypt as _scrypt } from "crypto";
-import { promisify } from "util";
-
-const scrypt = promisify(_scrypt);
+import { checkPassword } from "src/utils/auth.utils";
 
 @Injectable()
 export class AuthService {
@@ -28,10 +24,8 @@ export class AuthService {
         "Такого пользователя не существует",
         HttpStatus.NOT_FOUND,
       );
-    //Дешифрование пароля лучше вынести отдельно в папку utils в виде функции
-    const [salt, storedHash] = user.password.split(".");
-    const hash = (await scrypt(dto.password, salt, 32)) as Buffer;
-    if (storedHash != hash.toString("hex"))
+
+    if (!(await checkPassword(dto, user.password)))
       throw new HttpException(
         "Неверные данные для входа",
         HttpStatus.BAD_REQUEST,

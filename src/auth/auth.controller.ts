@@ -7,8 +7,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { CreateUserDto } from "src/dtos/create-user.dto";
-import { SignInDto } from "src/dtos/signin.dto";
+import { CreateUserDto, SignInDto } from "src/dtos/user.dto";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { JwtGuard } from "src/guard/jwt.guard";
 import { UserService } from "src/user/user.service";
@@ -19,7 +18,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   @Post("signup")
   @ApiOperation({ summary: "Sign Up" })
