@@ -37,6 +37,7 @@ export class AuthController {
     summary: "Returns all information about user except for password",
   })
   @UseGuards(JwtGuard)
+  //Нужно указать тип Request импортированный из express
   async getInfo(@Request() req) {
     const id = req["user"]["sub"];
     const user = await this.userService.getById(id);
