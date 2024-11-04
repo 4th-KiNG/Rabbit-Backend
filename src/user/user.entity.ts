@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Role, Sex } from "./user.types";
 
 @Entity()
 export class User {
@@ -13,4 +14,31 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column()
+  avatarURL?: string;
+
+  @Column()
+  regDate: Date;
+
+  @Column()
+  role: Role;
+
+  @Column()
+  subscriptionsId?: string[];
+
+  @Column()
+  postsId?: string[];
+
+  @Column()
+  subscribersId?: string[];
+
+  @Column()
+  birthDate?: Date;
+
+  @Column()
+  sex?: Sex;
+
+  @Column()
+  commentsId?: string[];
 }
