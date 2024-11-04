@@ -15,7 +15,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatarURL?: string;
 
   @Column()
@@ -24,21 +24,21 @@ export class User {
   @Column()
   role: Role;
 
-  @Column()
+  @Column("simple-array", { nullable: true })
   subscriptionsId?: string[];
 
-  @Column()
+  @Column("simple-array", { nullable: true })
   postsId?: string[];
 
-  @Column()
+  @Column("simple-array", { nullable: true })
   subscribersId?: string[];
 
-  @Column()
+  @Column({ nullable: true })
   birthDate?: Date;
 
-  @Column()
+  @Column({ nullable: true })
   sex?: Sex;
 
-  @Column()
+  @Column("simple-array", { nullable: true })
   commentsId?: string[];
 }

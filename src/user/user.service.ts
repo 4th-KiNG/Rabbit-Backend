@@ -4,6 +4,7 @@ import { User } from "./user.entity";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "src/dtos/user.dto";
 import { encryptPassword } from "src/utils/auth.utils";
+import { Role } from "./user.types";
 @Injectable()
 export class UserService {
   constructor(
@@ -32,6 +33,8 @@ export class UserService {
       username: newUserUsername,
       email: newUserEmail,
       password: await encryptPassword(newUserPassword),
+      regDate: new Date(),
+      role: Role.BasicUser,
     });
     return await this.userRepository.save(newUser);
   }
