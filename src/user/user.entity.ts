@@ -18,7 +18,7 @@ export class User {
   @Column({ nullable: true })
   avatarURL?: string;
 
-  @Column()
+  @Column({ type: "date" })
   regDate: Date;
 
   @Column()
@@ -33,7 +33,7 @@ export class User {
   @Column("simple-array", { nullable: true })
   subscribersId?: string[];
 
-  @Column({ nullable: true })
+  @Column({ type: "date", nullable: true })
   birthDate?: Date;
 
   @Column({ nullable: true })

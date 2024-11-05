@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
-import { CreateUserDto } from "src/dtos/user.dto";
+import { CreateUserDto, UpdateUserDto } from "src/dtos/user.dto";
 import { encryptPassword } from "src/utils/auth.utils";
 import { Role } from "./user.types";
 @Injectable()
@@ -39,7 +39,21 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  // id должен иметь вид uuid!!!
+  async update(id: string, dto: UpdateUserDto) {
+    const user = await this.getById(id);
+    if (dto.newBirthDate) user.birthDate = dto.newBirthDate;
+    if (dto.newSex) user.sex = dto.newSex;
+    if (dto.newUsername)
+      if (!(await this.getByUsername(dto.newUsername)))
+        user.username = dto.newUsername;
+      else
+        throw new HttpException(
+          "Данный nickname уже занят",
+          HttpStatus.BAD_REQUEST,
+        );
+    return await this.userRepository.save(user);
+  }
+
   async getById(id: string) {
     return await this.userRepository.findOneBy({ id: id });
   }

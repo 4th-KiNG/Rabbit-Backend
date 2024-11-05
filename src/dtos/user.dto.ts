@@ -1,7 +1,7 @@
-import { IsString, IsEmail } from "class-validator";
+import { IsString, IsEmail, IsOptional, IsDate, IsEnum } from "class-validator";
+import { Type, Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
-import { Role } from "src/user/user.types";
-
+import { Sex } from "src/user/user.types";
 export class CreateUserDto {
   @IsString()
   @ApiProperty({ example: "Jose", description: "User's name" })
@@ -14,10 +14,6 @@ export class CreateUserDto {
   @IsString()
   @ApiProperty({ example: "123", description: "User's password" })
   password: string;
-
-  regDate: Date;
-
-  role: Role;
 }
 
 export class SignInDto {
@@ -28,4 +24,35 @@ export class SignInDto {
   @IsString()
   @ApiProperty({ example: "123", description: "User's password" })
   password: string;
+}
+
+export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: "Jose", description: "User's new name" })
+  newUsername: string;
+
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  @ApiProperty({
+    example: "2024-01-01",
+    description: "User's new birth date",
+  })
+  newBirthDate: Date;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === "string") {
+      if (value.toLowerCase() === "муж") return Sex.Male;
+      else if (value.toLowerCase() === "жен") return Sex.Female;
+    }
+    return undefined;
+  })
+  @ApiProperty({
+    example: "Мужской",
+    description: "User's new sex",
+  })
+  @IsEnum(Sex)
+  newSex: Sex;
 }

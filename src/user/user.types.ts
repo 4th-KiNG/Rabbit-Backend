@@ -4,6 +4,6 @@ export enum Role {
 }
 
 export enum Sex {
-  Male = "Мужской",
-  Female = "Женский",
+  Male = "муж",
+  Female = "жен",
 }

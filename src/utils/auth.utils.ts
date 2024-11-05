@@ -4,14 +4,12 @@ import { promisify } from "util";
 
 const scrypt = promisify(_scrypt);
 
-//проверка пароля
 export async function checkPassword(dto: SignInDto, password: string) {
   const [salt, storedHash] = password.split(".");
   const hash = (await scrypt(dto.password, salt, 32)) as Buffer;
   return storedHash === hash.toString("hex");
 }
 
-//шифрование пароля
 export async function encryptPassword(password: string) {
   const salt = randomBytes(8).toString("hex");
   const hash = (await scrypt(password, salt, 32)) as Buffer;
