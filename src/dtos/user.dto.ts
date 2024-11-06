@@ -50,7 +50,7 @@ export class UpdateUserDto {
     return undefined;
   })
   @ApiProperty({
-    example: "Мужской",
+    example: "муж",
     description: "User's new sex",
   })
   @IsEnum(Sex)
