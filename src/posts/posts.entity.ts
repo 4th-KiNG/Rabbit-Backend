@@ -2,9 +2,9 @@ import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Posts {
-  //id у нас будет иметь тип string
+
   @PrimaryGeneratedColumn("uuid")
-  id: number;
+  id: string;
 
   @Column()
   title: string;
@@ -12,24 +12,16 @@ export class Posts {
   @Column()
   userId: string;
 
-  //переназови переменную commentsId, чтобы более понятно было. Свойство nullable должно быть true у полей,
-  //которые могут равняться значению null.
-  //Так же все id будут иметь тип string, а самих id будет много, поэтому поле должно быть string[] (массив)
-  //Если свойство будет в виде массива, то нужно вначале указать, что это simple-array. Я как пример написал в этом свойстве,
-  //тебе нужно проставить такое же в других поля, где массивы используются
-  @Column("simple-array", { nullable: false })
-  comId: number;
+  @Column("simple-array", { nullable: true })
+  commentsId: string[];
 
-  //все аналогично поправить как в comId
-  @Column({ nullable: false })
-  likeId: number;
+  @Column({"simple-array", nullable: true })
+  likeId: string[];
 
-  //это свойство тоже может иметь значение null
-  @Column()
+  @Column({ nullable: true})
   text: string;
 
-  //это свойство тоже может иметь значение null
-  @Column()
+  @Column({ nullable: true})
   image: string;
 
   @Column()
