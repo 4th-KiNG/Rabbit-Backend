@@ -13,9 +13,13 @@ export class MinioService {
       accessKey: this.configService.get<string>("MINIO_ACCESSKEY"),
       secretKey: this.configService.get<string>("MINIO_SECRETKEY"),
     });
+    //так как у нас картинки будут не только в качестве аватарок, а ещё в виде баннеров, картинок постов и тд,
+    //то неправильно все сохранять в bucket с одним названием
+    //если добавлять картинки, то лучше дополнительным аргументом указать bucketName, чтобы не складывать все в одну папку
     this.bucketName = this.configService.get<string>("MINIO_BUCKETNAME");
   }
-
+  //лучше добавить в эту функцию аргумент bucketName и сразу в конструкторе создавать bucket с названием avatars,
+  //чем в каждой функции заново проверять и создавать
   async createBucketIfNotExists() {
     const bucketExists = await this.minioClient.bucketExists(this.bucketName);
     if (!bucketExists) {
@@ -38,6 +42,7 @@ export class MinioService {
     return fileName;
   }
 
+  //может быть не увидел, где именно юзается данная функция?
   async getFileUrl(fileName: string) {
     await this.createBucketIfNotExists();
     return await this.minioClient.presignedUrl(
