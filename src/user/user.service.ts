@@ -5,11 +5,14 @@ import { Repository } from "typeorm";
 import { CreateUserDto, UpdateUserDto } from "src/dtos/user.dto";
 import { encryptPassword } from "src/utils/auth.utils";
 import { Role } from "./user.types";
+import { MinioService } from "src/minio/minio.service";
+import { Response as Response_type } from "express";
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly minioService: MinioService,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -52,6 +55,18 @@ export class UserService {
           HttpStatus.BAD_REQUEST,
         );
     return await this.userRepository.save(user);
+  }
+
+  async changeAvatar(id: string, file: Express.Multer.File) {
+    file.originalname = id + ".png";
+    return await this.minioService.uploadFile(file);
+  }
+
+  async getAvatar(id: string, res: Response_type) {
+    const fName = id + ".png";
+    const fileStream = await this.minioService.getFileAsFileStream(fName);
+    res.set({ "Content-Type": "image/png" });
+    fileStream.pipe(res);
   }
 
   async getById(id: string) {

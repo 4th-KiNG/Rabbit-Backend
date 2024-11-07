@@ -15,9 +15,6 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  avatarURL?: string;
-
   @Column({ type: "date" })
   regDate: Date;
 
