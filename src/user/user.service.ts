@@ -7,12 +7,14 @@ import { encryptPassword } from "src/utils/auth.utils";
 import { Role } from "./user.types";
 import { MinioService } from "src/minio/minio.service";
 import { Response as Response_type } from "express";
+import { ConfigService } from "@nestjs/config";
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly minioService: MinioService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -59,14 +61,24 @@ export class UserService {
 
   async changeAvatar(id: string, file: Express.Multer.File) {
     file.originalname = id + ".png";
-    return await this.minioService.uploadFile(file);
+    return await this.minioService.uploadFile(
+      this.configService.get<string>("MINIO_AVATARS_BUCKETNAME"),
+      file,
+    );
   }
 
   async getAvatar(id: string, res: Response_type) {
-    const fName = id + ".png";
-    const fileStream = await this.minioService.getFileAsFileStream(fName);
-    res.set({ "Content-Type": "image/png" });
-    fileStream.pipe(res);
+    try {
+      const fName = id + ".png";
+      const fileStream = await this.minioService.getFileAsFileStream(
+        this.configService.get<string>("MINIO_AVATARS_BUCKETNAME"),
+        fName,
+      );
+      res.set({ "Content-Type": "image/png" });
+      fileStream.pipe(res);
+    } catch {
+      this.getAvatar("default", res);
+    }
   }
 
   async getById(id: string) {
@@ -74,7 +86,15 @@ export class UserService {
   }
 
   async getByUsername(username: string) {
-    return await this.userRepository.findOneBy({ username: username });
+    const user = await this.userRepository.findOneBy({ username: username });
+    delete user.password;
+    return user;
+  }
+
+  async getByUsernameUserContoller(username: string) {
+    const user = await this.getByUsername(username);
+    delete user.email;
+    return user;
   }
 
   async getByEmail(email: string) {

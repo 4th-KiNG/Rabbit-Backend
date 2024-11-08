@@ -29,12 +29,13 @@ export class UserController {
   })
   @UseGuards(JwtGuard)
   @UseInterceptors(FileInterceptor("avatar"))
-  async changeAvatar(
+  ChangeAvatar(
     @Request() req: Request_type,
     @UploadedFile() file: Express.Multer.File,
   ) {
     const id = req["user"]["sub"];
-    return await this.userService.changeAvatar(id, file);
+    this.userService.changeAvatar(id, file);
+    return "OK";
   }
 
   @Get("avatar")
@@ -42,12 +43,9 @@ export class UserController {
     summary: "Get user's avatar",
   })
   @UseGuards(JwtGuard)
-  async getAvatar(
-    @Request() req: Request_type,
-    @Response() res: Response_type,
-  ) {
+  GetAvatar(@Request() req: Request_type, @Response() res: Response_type) {
     const id = req["user"]["sub"];
-    return await this.userService.getAvatar(id, res);
+    return this.userService.getAvatar(id, res);
   }
 
   @Get(":username")
@@ -55,10 +53,8 @@ export class UserController {
     summary: "Get user by username(so far you should be signed in)",
   })
   @UseGuards(JwtGuard)
-  async getUserByUsername(@Param("username") username: string) {
-    const user = await this.userService.getByUsername(username);
-    delete user.email;
-    delete user.password;
+  GetUserByUsername(@Param("username") username: string) {
+    const user = this.userService.getByUsernameUserContoller(username);
     return user;
   }
 
@@ -67,8 +63,8 @@ export class UserController {
     summary: "Update username, birth date, sex",
   })
   @UseGuards(JwtGuard)
-  async updateUser(@Request() req: Request_type, @Body() dto: UpdateUserDto) {
+  UpdateUser(@Request() req: Request_type, @Body() dto: UpdateUserDto) {
     const id = req["user"]["sub"];
-    return await this.userService.update(id, dto);
+    return this.userService.update(id, dto);
   }
 }

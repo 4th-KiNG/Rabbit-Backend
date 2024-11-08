@@ -23,13 +23,13 @@ export class AuthController {
 
   @Post("signup")
   @ApiOperation({ summary: "Sign Up" })
-  signUp(@Body() dto: CreateUserDto) {
+  SignUp(@Body() dto: CreateUserDto) {
     return this.authService.signUp(dto);
   }
 
   @Post("signin")
   @ApiOperation({ summary: "Sign In" })
-  signIn(@Body() dto: SignInDto) {
+  SignIn(@Body() dto: SignInDto) {
     return this.authService.signIn(dto);
   }
 
@@ -38,10 +38,9 @@ export class AuthController {
     summary: "Returns all information about user except for password",
   })
   @UseGuards(JwtGuard)
-  async getInfo(@Request() req: Request_type) {
+  GetInfo(@Request() req: Request_type) {
     const id = req["user"]["sub"];
-    const user = await this.userService.getById(id);
-    delete user.password;
+    const user = this.userService.getById(id);
     return user;
   }
 }

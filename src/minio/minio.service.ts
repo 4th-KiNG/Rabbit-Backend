@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 @Injectable()
 export class MinioService {
   private readonly minioClient: Client;
-  private bucketName: string;
+  private avatarsBucketName: string;
   constructor(private readonly configService: ConfigService) {
     this.minioClient = new Client({
       endPoint: this.configService.get<string>("MINIO_ENDPOINT"),
@@ -13,28 +13,27 @@ export class MinioService {
       accessKey: this.configService.get<string>("MINIO_ACCESSKEY"),
       secretKey: this.configService.get<string>("MINIO_SECRETKEY"),
     });
-    //так как у нас картинки будут не только в качестве аватарок, а ещё в виде баннеров, картинок постов и тд,
-    //то неправильно все сохранять в bucket с одним названием
-    //если добавлять картинки, то лучше дополнительным аргументом указать bucketName, чтобы не складывать все в одну папку
-    this.bucketName = this.configService.get<string>("MINIO_BUCKETNAME");
+
+    this.avatarsBucketName = this.configService.get<string>(
+      "MINIO_AVATARS_BUCKETNAME",
+    );
+    this.createBucketIfNotExists(this.avatarsBucketName);
   }
-  //лучше добавить в эту функцию аргумент bucketName и сразу в конструкторе создавать bucket с названием avatars,
-  //чем в каждой функции заново проверять и создавать
-  async createBucketIfNotExists() {
-    const bucketExists = await this.minioClient.bucketExists(this.bucketName);
+
+  async createBucketIfNotExists(name: string) {
+    const bucketExists = await this.minioClient.bucketExists(name);
     if (!bucketExists) {
       await this.minioClient.makeBucket(
-        this.bucketName,
+        name,
         this.configService.get<string>("MINIO_REGION"),
       );
     }
   }
 
-  async uploadFile(file: Express.Multer.File) {
-    await this.createBucketIfNotExists();
+  async uploadFile(bucketName: string, file: Express.Multer.File) {
     const fileName = file.originalname;
     await this.minioClient.putObject(
-      this.bucketName,
+      bucketName,
       fileName,
       file.buffer,
       file.size,
@@ -42,27 +41,15 @@ export class MinioService {
     return fileName;
   }
 
-  //может быть не увидел, где именно юзается данная функция?
-  async getFileUrl(fileName: string) {
-    await this.createBucketIfNotExists();
-    return await this.minioClient.presignedUrl(
-      "GET",
-      this.bucketName,
-      fileName,
-    );
-  }
-
-  async getFileAsFileStream(fileName: string) {
-    await this.createBucketIfNotExists();
+  async getFileAsFileStream(bucketName: string, fileName: string) {
     try {
-      return await this.minioClient.getObject(this.bucketName, fileName);
+      return await this.minioClient.getObject(bucketName, fileName);
     } catch (error) {
       throw new HttpException("Фотография не найдена", HttpStatus.NOT_FOUND);
     }
   }
 
-  async deleteFile(fileName: string) {
-    await this.createBucketIfNotExists();
-    await this.minioClient.removeObject(this.bucketName, fileName);
+  async deleteFile(bucketName: string, fileName: string) {
+    await this.minioClient.removeObject(bucketName, fileName);
   }
 }
