@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from "./user/user.module";
 import { User } from "./user/user.entity";
 import { ConfigModule } from "@nestjs/config";
+import { MinioModule } from "./minio/minio.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +23,7 @@ import { ConfigModule } from "@nestjs/config";
     }),
     AuthModule,
     UserModule,
+    MinioModule,
   ],
   controllers: [],
   providers: [],
