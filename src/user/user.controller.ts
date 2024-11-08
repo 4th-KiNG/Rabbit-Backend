@@ -22,7 +22,16 @@ import { FileInterceptor } from "@nestjs/platform-express";
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  @Get()
+  @ApiOperation({
+    summary: "Returns all information about user except for password",
+  })
+  @UseGuards(JwtGuard)
+  GetInfo(@Request() req: Request_type) {
+    const id = req["user"]["sub"];
+    const user = this.userService.getById(id);
+    return user;
+  }
   @Post("avatar")
   @ApiOperation({
     summary: "Change user's avatar",
@@ -54,7 +63,7 @@ export class UserController {
   })
   @UseGuards(JwtGuard)
   GetUserByUsername(@Param("username") username: string) {
-    const user = this.userService.getByUsernameUserContoller(username);
+    const user = this.userService.getByUsernameUserController(username);
     return user;
   }
 
