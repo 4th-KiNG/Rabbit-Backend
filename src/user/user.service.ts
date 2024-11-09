@@ -21,7 +21,6 @@ export class UserService {
     const newUserEmail = dto.email;
     const newUserUsername = dto.username;
     const newUserPassword = dto.password;
-
     if (await this.getByEmail(newUserEmail))
       throw new HttpException(
         "Пользователь с такой почтой уже существует!",
@@ -30,7 +29,7 @@ export class UserService {
 
     if (await this.getByUsername(newUserUsername))
       throw new HttpException(
-        "Пользователь с таким username уже существует!",
+        "Пользователь с таким nickname уже существует!",
         HttpStatus.BAD_REQUEST,
       );
 
@@ -82,13 +81,13 @@ export class UserService {
   }
 
   async getById(id: string) {
-    return await this.userRepository.findOneBy({ id: id });
+    const user = await this.userRepository.findOneBy({ id: id });
+    delete user.password;
+    return user;
   }
 
   async getByUsername(username: string) {
-    const user = await this.userRepository.findOneBy({ username: username });
-    delete user.password;
-    return user;
+    return await this.userRepository.findOneBy({ username: username });
   }
 
   async getByUsernameUserController(username: string) {

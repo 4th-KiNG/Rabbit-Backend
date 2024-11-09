@@ -32,6 +32,7 @@ export class UserController {
     const user = this.userService.getById(id);
     return user;
   }
+
   @Post("avatar")
   @ApiOperation({
     summary: "Change user's avatar",
