@@ -76,27 +76,65 @@ export class UserService {
       res.set({ "Content-Type": "image/png" });
       fileStream.pipe(res);
     } catch {
-      this.getAvatar("default", res);
+      this.getAvatar("default-avatar", res);
+    }
+  }
+
+  async changeBanner(id: string, file: Express.Multer.File) {
+    file.originalname = id + ".png";
+    return await this.minioService.uploadFile(
+      this.configService.get<string>("MINIO_BANNERS_BUCKETNAME"),
+      file,
+    );
+  }
+
+  async getBanner(id: string, res: Response_type) {
+    try {
+      const fName = id + ".png";
+      const fileStream = await this.minioService.getFileAsFileStream(
+        this.configService.get<string>("MINIO_BANNERS_BUCKETNAME"),
+        fName,
+      );
+      res.set({ "Content-Type": "image/png" });
+      fileStream.pipe(res);
+    } catch {
+      this.getBanner("default-banner", res);
     }
   }
 
   async getById(id: string) {
-    const user = await this.userRepository.findOneBy({ id: id });
-    delete user.password;
-    return user;
+    try {
+      const user = await this.userRepository.findOneBy({ id: id });
+      delete user.password;
+      return user;
+    } catch {
+      throw new HttpException("Пользователь не найден", HttpStatus.NOT_FOUND);
+    }
   }
 
   async getByUsername(username: string) {
-    return await this.userRepository.findOneBy({ username: username });
+    try {
+      return await this.userRepository.findOneBy({ username: username });
+    } catch {
+      throw new HttpException("Пользователь не найден", HttpStatus.NOT_FOUND);
+    }
   }
 
   async getByUsernameUserController(username: string) {
-    const user = await this.getByUsername(username);
-    delete user.email;
-    return user;
+    try {
+      const user = await this.getByUsername(username);
+      delete user.email;
+      return user;
+    } catch {
+      throw new HttpException("Пользователь не найден", HttpStatus.NOT_FOUND);
+    }
   }
 
   async getByEmail(email: string) {
-    return await this.userRepository.findOneBy({ email: email });
+    try {
+      return await this.userRepository.findOneBy({ email: email });
+    } catch {
+      throw new HttpException("Пользователь не найден", HttpStatus.NOT_FOUND);
+    }
   }
 }
