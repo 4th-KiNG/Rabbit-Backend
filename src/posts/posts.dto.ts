@@ -1,3 +1,1 @@
-export interface CreatePostDto {
-
-}
+export interface CreatePostDto {}

@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 @Entity()
 export class Posts {
   @PrimaryGeneratedColumn("uuid")
-  id: number;
+  id: string;
 
   @Column()
   title: string;
@@ -11,16 +11,16 @@ export class Posts {
   @Column()
   userId: string;
 
-  @Column({ nullable: false})
-  comId: number;
+  @Column("simple-array", { nullable: true })
+  commentsId: string[];
 
-  @Column({ nullable: false})
-  likeId: number;
+  @Column("simple-array", { nullable: true })
+  likeId: string[];
 
-  @Column()
+  @Column({ nullable: true })
   text: string;
 
-  @Column()
+  @Column({ nullable: true })
   image: string;
 
   @Column()
