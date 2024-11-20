@@ -10,22 +10,25 @@ export class PostsService {
     private readonly postsRepository: Repository<Posts>,
   ) {}
 
-  //При создании поста я тебе поправить, чтобы свойствам likesId и commentsId присваивались просто пустые массивы при создании объекта
-  //Создавать лучше через функцию create (образец напоминаю находится в ветке main)
-  async createPost(id: string, title: string, text: string) {
-    const newPost = {
+  async createPost(
+    id: string,
+    title: string,
+    text: string,
+    commentsId: null,
+    likeId: null,
+  ) {
+    const newPost = this.postsRepository.create({
       id: id,
       title: title,
+      commentsId: commentsId,
+      likeId: likeId,
       text: text,
       createDate: new Date(),
-    };
-    return this.postsRepository.save(newPost);
+    });
+    return await this.postsRepository.save(newPost);
   }
 
-  //Даже по логике, если id передается в getPost, его же нужно где то использовать, а у тебя оно не используется)
-  //Короче говоря id нужно убрать
-  //Для получения всех постов из бд, у репозитория немного другая функция. Я тебе в задаче по моему её даже написал, посмотри ещё раз
-  async getPost(id: string) {
+  async getPosts() {
     return this.postsRepository.find();
   }
 }

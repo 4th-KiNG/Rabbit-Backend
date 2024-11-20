@@ -12,3 +12,4 @@ import { JwtModule } from "@nestjs/jwt";
   exports: [PostsService, TypeOrmModule],
 })
 export class PostsModule {}
+
