@@ -11,3 +11,4 @@ import { JwtModule } from "@nestjs/jwt";
   exports: [UserService, TypeOrmModule],
 })
 export class UserModule {}
+

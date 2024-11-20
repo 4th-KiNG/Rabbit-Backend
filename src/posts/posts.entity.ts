@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Posts {
-
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -12,18 +11,19 @@ export class Posts {
   @Column()
   userId: string;
 
-  @Column("simple-array", { nullable: true })
+  @Column("simple-array")
   commentsId: string[];
 
-  @Column({"simple-array", nullable: true })
+  @Column("simple-array")
   likeId: string[];
 
-  @Column({ nullable: true})
+  @Column({ nullable: true })
   text: string;
 
-  @Column({ nullable: true})
+  @Column({ nullable: true })
   image: string;
 
   @Column()
   createDate: Date;
 }
+
