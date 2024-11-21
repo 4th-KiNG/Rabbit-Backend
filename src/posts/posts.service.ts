@@ -12,7 +12,7 @@ export class PostsService {
 
   async createPost(id: string, title: string, text: string) {
     const newPost = this.postsRepository.create({
-      id: id,
+      userId: id,
       title: title,
       commentsId: [],
       likesId: [],
