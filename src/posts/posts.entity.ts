@@ -15,7 +15,7 @@ export class Posts {
   commentsId: string[];
 
   @Column("simple-array")
-  likeId: string[];
+  likesId: string[];
 
   @Column({ nullable: true })
   text: string;
@@ -26,3 +26,4 @@ export class Posts {
   @Column()
   createDate: Date;
 }
+

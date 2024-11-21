@@ -10,18 +10,12 @@ export class PostsService {
     private readonly postsRepository: Repository<Posts>,
   ) {}
 
-  async createPost(
-    id: string,
-    title: string,
-    text: string,
-    commentsId: null,
-    likeId: null,
-  ) {
+  async createPost(id: string, title: string, text: string) {
     const newPost = this.postsRepository.create({
       id: id,
       title: title,
-      commentsId: commentsId,
-      likeId: likeId,
+      commentsId: [],
+      likesId: [],
       text: text,
       createDate: new Date(),
     });
@@ -32,3 +26,4 @@ export class PostsService {
     return this.postsRepository.find();
   }
 }
+

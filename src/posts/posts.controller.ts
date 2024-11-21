@@ -1,14 +1,6 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Param,
-  UseGuards,
-  Request,
-  Response,
-} from "@nestjs/common";
+import { Controller, Post, Get, UseGuards, Request } from "@nestjs/common";
 import { PostsService } from "./posts.service";
-import { Request as Request_type, Response as Response_type } from "express";
+import { Request as Request_type } from "express";
 import { JwtGuard } from "src/guard/jwt.guard";
 
 @Controller("posts")
@@ -18,14 +10,8 @@ export class PostsController {
   @Post()
   @UseGuards(JwtGuard)
   CreatePost(@Request() req: Request_type) {
-    const id = req["userId"]["sub"];
-    return this.postsService.createPost(
-      id,
-      req.body.title,
-      req.body.text,
-      req.body.likeId,
-      req.body.commentsId,
-    );
+    const id = req["user"]["sub"];
+    return this.postsService.createPost(id, req.body.title, req.body.text);
   }
 
   @Get()
@@ -34,3 +20,4 @@ export class PostsController {
     return this.postsService.getPosts();
   }
 }
+
