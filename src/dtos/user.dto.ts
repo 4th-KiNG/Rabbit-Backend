@@ -56,3 +56,13 @@ export class UpdateUserDto {
   @IsEnum(Sex)
   newSex: Sex;
 }
+
+export class CheckVerificationDto {
+  @IsEmail()
+  @ApiProperty({ example: "123@ya.ru", description: "User's email" })
+  email: string;
+
+  @IsString()
+  @ApiProperty({ example: "1111", description: "Verification code" })
+  code: string;
+}
