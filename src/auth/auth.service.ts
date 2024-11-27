@@ -40,7 +40,9 @@ export class AuthService {
   }
 
   async checkVerificationCode(email: string, code: string) {
-    const verificationCode = (await this.redisService.get(email)).split(":")[0];
+    const verificationCode = (await this.redisService.get(email))
+      .split(":")[0]
+      .slice(1);
     const res = code === verificationCode || code === "0000";
     if (res) {
       this.redisService.set(email, verificationCode + ":1", 3600 * 24 * 7);
