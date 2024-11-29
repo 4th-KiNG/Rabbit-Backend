@@ -38,7 +38,7 @@ services:
   rabbit-backend:
     build: .
     ports:
-      - "443:443"
+      - "3000:3000"
     environment:
       - PG_HOST=db
       - PG_PORT=5432
