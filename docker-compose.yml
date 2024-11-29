@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 
 services:
   db:
@@ -38,7 +38,7 @@ services:
   rabbit-backend:
     build: .
     ports:
-      - "3000:3000"
+      - "443:443"
     environment:
       - PG_HOST=db
       - PG_PORT=5432

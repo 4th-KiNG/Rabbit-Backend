@@ -16,7 +16,7 @@ COPY . .
 RUN yarn build
 
 # Откройте порт (например, 3000)
-EXPOSE 3000
+EXPOSE 443
 
 # Запустите приложение
 CMD ["yarn", "start:prod"]
