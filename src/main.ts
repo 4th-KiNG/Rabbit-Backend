@@ -2,9 +2,18 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import fs from "fs";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync(
+      "../../../../etc/letsencrypt/live/rabbit-vm.ddns.net/privkey.pem",
+    ),
+    cert: fs.readFileSync(
+      "../../../../etc/letsencrypt/live/rabbit-vm.ddns.net/fullchain.pem",
+    ),
+  };
+  const app = await NestFactory.create(AppModule, { httpsOptions });
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
@@ -24,4 +33,3 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
-
