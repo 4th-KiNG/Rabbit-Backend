@@ -1,10 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Client } from "minio";
 import { ConfigService } from "@nestjs/config";
+import * as fs from "fs";
+import * as path from "path";
+
 @Injectable()
 export class MinioService {
   private readonly minioClient: Client;
   private avatarsBucketName: string;
+  private bannersBucketName: string;
   constructor(private readonly configService: ConfigService) {
     this.minioClient = new Client({
       endPoint: this.configService.get<string>("MINIO_ENDPOINT"),
@@ -17,7 +21,15 @@ export class MinioService {
     this.avatarsBucketName = this.configService.get<string>(
       "MINIO_AVATARS_BUCKETNAME",
     );
+    this.bannersBucketName = this.configService.get<string>(
+      "MINIO_BANNERS_BUCKETNAME",
+    );
+
     this.createBucketIfNotExists(this.avatarsBucketName);
+    this.createBucketIfNotExists(this.bannersBucketName);
+
+    this.uploadFilePath(this.avatarsBucketName, "default-avatar.png");
+    this.uploadFilePath(this.bannersBucketName, "default-banner.png");
   }
 
   async createBucketIfNotExists(name: string) {
@@ -39,6 +51,18 @@ export class MinioService {
       file.size,
     );
     return fileName;
+  }
+
+  async uploadFilePath(bucketName: string, filePath: string) {
+    const buffer = await fs.promises.readFile(filePath);
+    const fileName = path.basename(filePath);
+
+    await this.minioClient.putObject(
+      bucketName,
+      fileName,
+      buffer,
+      buffer.length,
+    );
   }
 
   async getFileAsFileStream(bucketName: string, fileName: string) {

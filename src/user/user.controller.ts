@@ -48,14 +48,37 @@ export class UserController {
     return "OK";
   }
 
-  @Get("avatar")
+  @Get("avatar/:id")
   @ApiOperation({
     summary: "Get user's avatar",
   })
   @UseGuards(JwtGuard)
-  GetAvatar(@Request() req: Request_type, @Response() res: Response_type) {
-    const id = req["user"]["sub"];
+  GetAvatar(@Param("id") id: string, @Response() res: Response_type) {
     return this.userService.getAvatar(id, res);
+  }
+
+  @Post("banner")
+  @ApiOperation({
+    summary: "Change user's banner",
+  })
+  @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor("banner"))
+  ChangeBanner(
+    @Request() req: Request_type,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const id = req["user"]["sub"];
+    this.userService.changeBanner(id, file);
+    return "OK";
+  }
+
+  @Get("banner/:id")
+  @ApiOperation({
+    summary: "Get user's banner",
+  })
+  @UseGuards(JwtGuard)
+  GetBanner(@Param("id") id: string, @Response() res: Response_type) {
+    return this.userService.getBanner(id, res);
   }
 
   @Get(":username")

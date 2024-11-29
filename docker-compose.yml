@@ -1,3 +1,5 @@
+version: '3.3'
+
 services:
   db:
     image: postgres:15
@@ -33,6 +35,28 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
+  rabbit-backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PG_HOST=db
+      - PG_PORT=5432
+      - PG_USERNAME=postgres
+      - PG_PASSWORD=postgres
+      - DATABASE=postgres
+      - JWTSECRET=secret
+      - MINIO_AVATARS_BUCKETNAME=rabbit-avatars
+      - MINIO_BANNERS_BUCKETNAME=rabbit-banners
+      - MINIO_REGION=russia
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_USESSL=0
+      - MINIO_ACCESSKEY=user
+      - MINIO_SECRETKEY=password
+    depends_on:
+      - db
+      - minio
 
 volumes:
   pgdata:
