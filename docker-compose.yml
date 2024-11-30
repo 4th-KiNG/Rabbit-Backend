@@ -36,7 +36,7 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
   rabbit-backend:
-    build: .
+    image: ozoki46/rabbit-backend-rabbit-backend
     ports:
       - "3000:3000"
     volumes:
