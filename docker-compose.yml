@@ -40,7 +40,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - rabbitdata:/secrets
+      - ../../../secrets:/rabbitdata
     environment:
       - PG_HOST=db
       - PG_PORT=5432
@@ -64,7 +64,7 @@ services:
       - minio
 
 volumes:
-  rabbitdata:
   pgdata:
   minio_data:
     driver: local
+  rabbitdata:

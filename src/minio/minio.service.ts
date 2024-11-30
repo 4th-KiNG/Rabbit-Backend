@@ -10,13 +10,17 @@ export class MinioService {
   private avatarsBucketName: string;
   private bannersBucketName: string;
   constructor(private readonly configService: ConfigService) {
-    this.minioClient = new Client({
-      endPoint: this.configService.get<string>("MINIO_ENDPOINT"),
-      port: parseInt(this.configService.get<string>("MINIO_PORT")),
-      useSSL: parseInt(this.configService.get<string>("MINIO_USESSL")) === 1,
-      accessKey: this.configService.get<string>("MINIO_ACCESSKEY"),
-      secretKey: this.configService.get<string>("MINIO_SECRETKEY"),
-    });
+    try {
+      this.minioClient = new Client({
+        endPoint: this.configService.get<string>("MINIO_ENDPOINT"),
+        port: parseInt(this.configService.get<string>("MINIO_PORT")),
+        useSSL: parseInt(this.configService.get<string>("MINIO_USESSL")) === 1,
+        accessKey: this.configService.get<string>("MINIO_ACCESSKEY"),
+        secretKey: this.configService.get<string>("MINIO_SECRETKEY"),
+      });
+    } catch (e) {
+      console.log(e);
+    }
 
     this.avatarsBucketName = this.configService.get<string>(
       "MINIO_AVATARS_BUCKETNAME",
