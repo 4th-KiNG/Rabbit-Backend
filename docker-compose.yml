@@ -39,6 +39,8 @@ services:
     build: .
     ports:
       - "3000:3000"
+    volumes:
+      - rabbitdata:/secrets
     environment:
       - PG_HOST=db
       - PG_PORT=5432
