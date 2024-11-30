@@ -56,6 +56,9 @@ services:
       - MINIO_USESSL=0
       - MINIO_ACCESSKEY=user
       - MINIO_SECRETKEY=password
+      - SSL_KEY_PATH=../rabbitdata/privkey.pem
+      - SSL_CERT_PATH=../rabbitdata/fullchain.pem
+      - SSL=TRUE
     depends_on:
       - db
       - minio

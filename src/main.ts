@@ -3,12 +3,19 @@ import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import * as fs from "fs";
+import * as path from "path";
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync("../rabbitdata/privkey.pem"),
-    cert: fs.readFileSync("../rabbitdata/fullchain.pem"),
-  };
+  const ssl = process.env.SSL === "true";
+  let httpsOptions = null;
+  if (ssl) {
+    const keyPath = process.env.SSL_KEY_PATH || "";
+    const certPath = process.env.SSL_CERT_PATH || "";
+    httpsOptions = {
+      key: fs.readFileSync(path.join(__dirname, keyPath)),
+      cert: fs.readFileSync(path.join(__dirname, certPath)),
+    };
+  }
   const app = await NestFactory.create(AppModule, { httpsOptions });
   app.enableCors();
   app.useGlobalPipes(
