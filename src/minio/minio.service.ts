@@ -10,17 +10,13 @@ export class MinioService {
   private avatarsBucketName: string;
   private bannersBucketName: string;
   constructor(private readonly configService: ConfigService) {
-    try {
-      this.minioClient = new Client({
-        endPoint: this.configService.get<string>("MINIO_ENDPOINT"),
-        port: parseInt(this.configService.get<string>("MINIO_PORT")),
-        useSSL: parseInt(this.configService.get<string>("MINIO_USESSL")) === 1,
-        accessKey: this.configService.get<string>("MINIO_ACCESSKEY"),
-        secretKey: this.configService.get<string>("MINIO_SECRETKEY"),
-      });
-    } catch (e) {
-      console.log(e);
-    }
+    this.minioClient = new Client({
+      endPoint: this.configService.get<string>("MINIO_ENDPOINT"),
+      port: parseInt(this.configService.get<string>("MINIO_PORT")),
+      useSSL: parseInt(this.configService.get<string>("MINIO_USESSL")) === 1,
+      accessKey: this.configService.get<string>("MINIO_ACCESSKEY"),
+      secretKey: this.configService.get<string>("MINIO_SECRETKEY"),
+    });
 
     this.avatarsBucketName = this.configService.get<string>(
       "MINIO_AVATARS_BUCKETNAME",
@@ -31,9 +27,6 @@ export class MinioService {
 
     this.createBucketIfNotExists(this.avatarsBucketName);
     this.createBucketIfNotExists(this.bannersBucketName);
-
-    this.uploadFilePath(this.avatarsBucketName, "default-avatar.png");
-    this.uploadFilePath(this.bannersBucketName, "default-banner.png");
   }
 
   async createBucketIfNotExists(name: string) {
@@ -44,6 +37,8 @@ export class MinioService {
         this.configService.get<string>("MINIO_REGION"),
       );
     }
+    this.uploadFilePath(this.avatarsBucketName, "default-avatar.png");
+    this.uploadFilePath(this.bannersBucketName, "default-banner.png");
   }
 
   async uploadFile(bucketName: string, file: Express.Multer.File) {
