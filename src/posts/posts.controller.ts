@@ -20,4 +20,3 @@ export class PostsController {
     return this.postsService.getPosts();
   }
 }
-

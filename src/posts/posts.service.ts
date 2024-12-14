@@ -26,4 +26,3 @@ export class PostsService {
     return this.postsRepository.find();
   }
 }
-

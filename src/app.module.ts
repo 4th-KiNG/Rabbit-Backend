@@ -6,6 +6,7 @@ import { User } from "./user/user.entity";
 import { ConfigModule } from "@nestjs/config";
 import { PostsModule } from "./posts/posts.module";
 import { Posts } from "./posts/posts.entity";
+import { MinioModule } from "./minio/minio.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,10 +25,10 @@ import { Posts } from "./posts/posts.entity";
     }),
     AuthModule,
     UserModule,
+    MinioModule,
     PostsModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {}
-
