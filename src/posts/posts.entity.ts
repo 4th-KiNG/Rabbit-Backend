@@ -9,7 +9,7 @@ export class Posts {
   title: string;
 
   @Column()
-  userId: string;
+  ownerId: string;
 
   @Column("simple-array")
   commentsId: string[];
@@ -26,3 +26,4 @@ export class Posts {
   @Column()
   createDate: Date;
 }
+
