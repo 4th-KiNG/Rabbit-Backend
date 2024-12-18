@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Posts } from "./posts.entity";
@@ -24,5 +24,15 @@ export class PostsService {
 
   async getPosts() {
     return this.postsRepository.find();
+  }
+
+  async deletePost(id: string, postId: string) {
+    const delPost = this.postsRepository.findOneBy({ id: postId });
+    if ((delPost = id)) await this.postsRepository.delete(delPost);
+    else
+      throw new HttpException(
+        "Невозможно удалить пост",
+        HttpStatus.BAD_REQUEST,
+      );
   }
 }

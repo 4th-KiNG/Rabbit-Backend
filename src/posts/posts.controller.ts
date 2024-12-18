@@ -1,4 +1,12 @@
-import { Controller, Post, Get, UseGuards, Request } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Param,
+  Get,
+  UseGuards,
+  Request,
+  Delete,
+} from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request as Request_type } from "express";
 import { JwtGuard } from "src/guard/jwt.guard";
@@ -19,4 +27,12 @@ export class PostsController {
   GetPosts() {
     return this.postsService.getPosts();
   }
+
+  @Delete(":postId")
+  @UseGuards(JwtGuard)
+  DeletePost(@Request() req: Request_type, @Param("postId") postId: string) {
+    const id = req["user"]["sub"];
+    return this.postsService.deletePost(id, postId);
+  }
 }
+
