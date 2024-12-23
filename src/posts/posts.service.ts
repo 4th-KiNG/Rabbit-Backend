@@ -29,7 +29,7 @@ export class PostsService {
   async deletePost(userId: string, postId: string) {
     const delPost = await this.postsRepository.findOneBy({ id: postId });
     if (delPost.ownerId === userId)
-      await this.postsRepository.delete(delPost.ownerId);
+      await this.postsRepository.delete(delPost.id);
     else
       throw new HttpException(
         "Невозможно удалить пост",
@@ -37,4 +37,3 @@ export class PostsService {
       );
   }
 }
-
