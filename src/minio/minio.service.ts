@@ -27,9 +27,6 @@ export class MinioService {
 
     this.createBucketIfNotExists(this.avatarsBucketName);
     this.createBucketIfNotExists(this.bannersBucketName);
-
-    this.uploadFilePath(this.avatarsBucketName, "default-avatar.png");
-    this.uploadFilePath(this.bannersBucketName, "default-banner.png");
   }
 
   async createBucketIfNotExists(name: string) {
@@ -40,6 +37,8 @@ export class MinioService {
         this.configService.get<string>("MINIO_REGION"),
       );
     }
+    this.uploadFilePath(this.avatarsBucketName, "default-avatar.png");
+    this.uploadFilePath(this.bannersBucketName, "default-banner.png");
   }
 
   async uploadFile(bucketName: string, file: Express.Multer.File) {

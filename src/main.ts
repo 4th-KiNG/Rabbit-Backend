@@ -19,7 +19,7 @@ async function bootstrap() {
     .setVersion("0.0.1")
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("api", app, documentFactory);
-  await app.listen(3002);
+  SwaggerModule.setup("docs", app, documentFactory);
+  await app.listen(3000);
 }
 bootstrap();
