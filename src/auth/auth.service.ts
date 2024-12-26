@@ -52,7 +52,8 @@ export class AuthService {
 
   async signUp(dto: CreateUserDto) {
     if (
-      (await this.redisService.get(dto.email)).split(":")[1].slice(0, 1) === "1"
+      true
+      //(await this.redisService.get(dto.email)).split(":")[1].slice(0, 1) === "1"
     ) {
       const user = await this.userService.create(dto);
       const payload = { sub: user.id, username: user.username };

@@ -8,6 +8,9 @@ import { MinioModule } from "./minio/minio.module";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { getMailConfig } from "./configs/getMailConfig";
 import { RedisModule } from "./redis/redis.module";
+import { CommentsModule } from "./comments/comments.module";
+import { Comment } from "./comments/comments.entity";
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,7 +23,7 @@ import { RedisModule } from "./redis/redis.module";
       username: process.env.PG_USERNAME,
       password: process.env.PG_PASSWORD,
       database: process.env.DATABASE,
-      entities: [User],
+      entities: [User, Comment],
       synchronize: true,
       // autoLoadEntities: true
     }),
@@ -33,6 +36,7 @@ import { RedisModule } from "./redis/redis.module";
     UserModule,
     MinioModule,
     RedisModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [],
