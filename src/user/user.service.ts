@@ -6,8 +6,8 @@ import { CreateUserDto, UpdateUserDto } from "src/dtos/user.dto";
 import { encryptPassword } from "src/utils/auth.utils";
 import { Role } from "./user.types";
 import { MinioService } from "src/minio/minio.service";
-import { Response as Response_type } from "express";
 import { ConfigService } from "@nestjs/config";
+import { getMimeType, hashNameGenerate } from "src/utils/static.utils";
 @Injectable()
 export class UserService {
   constructor(
@@ -59,47 +59,47 @@ export class UserService {
   }
 
   async changeAvatar(id: string, file: Express.Multer.File) {
-    file.originalname = id + ".png";
+    if (
+      file.mimetype !== "image/png" &&
+      file.mimetype !== "image/jpg" &&
+      file.mimetype !== "image/jpeg"
+    )
+      throw new HttpException(
+        "Неверный формат изображения",
+        HttpStatus.BAD_REQUEST,
+      );
+    const fileName =
+      (await hashNameGenerate(file.originalname)) + getMimeType(file.mimetype);
+    file.originalname = fileName;
+    const user = await this.userRepository.findOneBy({ id: id });
+    user.avatar = fileName;
+    await this.userRepository.save(user);
     return await this.minioService.uploadFile(
       this.configService.get<string>("MINIO_AVATARS_BUCKETNAME"),
       file,
     );
   }
 
-  async getAvatar(id: string, res: Response_type) {
-    try {
-      const fName = id + ".png";
-      const fileStream = await this.minioService.getFileAsFileStream(
-        this.configService.get<string>("MINIO_AVATARS_BUCKETNAME"),
-        fName,
-      );
-      res.set({ "Content-Type": "image/png" });
-      fileStream.pipe(res);
-    } catch {
-      this.getAvatar("default-avatar", res);
-    }
-  }
-
   async changeBanner(id: string, file: Express.Multer.File) {
-    file.originalname = id + ".png";
+    if (
+      file.mimetype !== "image/png" &&
+      file.mimetype !== "image/jpg" &&
+      file.mimetype !== "image/jpeg"
+    )
+      throw new HttpException(
+        "Неверный формат изображения",
+        HttpStatus.BAD_REQUEST,
+      );
+    const fileName =
+      (await hashNameGenerate(file.originalname)) + getMimeType(file.mimetype);
+    file.originalname = fileName;
+    const user = await this.userRepository.findOneBy({ id: id });
+    user.banner = fileName;
+    await this.userRepository.save(user);
     return await this.minioService.uploadFile(
       this.configService.get<string>("MINIO_BANNERS_BUCKETNAME"),
       file,
     );
-  }
-
-  async getBanner(id: string, res: Response_type) {
-    try {
-      const fName = id + ".png";
-      const fileStream = await this.minioService.getFileAsFileStream(
-        this.configService.get<string>("MINIO_BANNERS_BUCKETNAME"),
-        fName,
-      );
-      res.set({ "Content-Type": "image/png" });
-      fileStream.pipe(res);
-    } catch {
-      this.getBanner("default-banner", res);
-    }
   }
 
   async getById(id: string) {

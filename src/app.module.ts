@@ -7,6 +7,7 @@ import { ConfigModule } from "@nestjs/config";
 import { PostsModule } from "./posts/posts.module";
 import { Posts } from "./posts/posts.entity";
 import { MinioModule } from "./minio/minio.module";
+import { StaticModule } from "./static/static.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +28,7 @@ import { MinioModule } from "./minio/minio.module";
     UserModule,
     MinioModule,
     PostsModule,
+    StaticModule,
   ],
   controllers: [],
   providers: [],
