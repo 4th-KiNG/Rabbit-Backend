@@ -4,6 +4,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserModule } from "./user/user.module";
 import { User } from "./user/user.entity";
 import { ConfigModule } from "@nestjs/config";
+import { PostsModule } from "./posts/posts.module";
+import { Posts } from "./posts/posts.entity";
 import { MinioModule } from "./minio/minio.module";
 import { StaticModule } from "./static/static.module";
 @Module({
@@ -18,13 +20,14 @@ import { StaticModule } from "./static/static.module";
       username: process.env.PG_USERNAME,
       password: process.env.PG_PASSWORD,
       database: process.env.DATABASE,
-      entities: [User],
+      entities: [User, Posts],
       synchronize: true,
-      // autoLoadEntities: true
+      //autoLoadEntities: true,
     }),
     AuthModule,
     UserModule,
     MinioModule,
+    PostsModule,
     StaticModule,
   ],
   controllers: [],

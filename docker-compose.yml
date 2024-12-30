@@ -1,0 +1,106 @@
+version: "3.3"
+
+networks:
+  prod:
+
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - prod
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - prod
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio_container
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: user
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - prod
+
+  # rabbit-frontend:
+  #   build:
+  #     context: ./Rabbit-Frontend
+  #   # image: ozoki46/rabbit-frontend
+  #   ports:
+  #     - "5173:5173"
+  #   networks:
+  #     - prod
+
+  # nginx:
+  #   image: nginx:stable-alpine
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - "./nginx.conf:/etc/nginx/nginx.conf"
+  #   depends_on:
+  #     - rabbit-backend
+  #     - rabbit-frontend
+  #   networks:
+  #     - prod
+
+  # rabbit-backend:
+  #   build:
+  #     context: ./Rabbit-Backend
+  #   # image: ozoki46/rabbit-backend
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ../../../secrets:/rabbitdata
+  #   environment:
+  #     - PG_HOST=db
+  #     - PG_PORT=5432
+  #     - PG_USERNAME=postgres
+  #     - PG_PASSWORD=postgres
+  #     - DATABASE=postgres
+  #     - JWTSECRET=secret
+  #     - MINIO_AVATARS_BUCKETNAME=rabbit-avatars
+  #     - MINIO_BANNERS_BUCKETNAME=rabbit-banners
+  #     - MINIO_REGION=russia
+  #     - MINIO_ENDPOINT=minio
+  #     - MINIO_PORT=9000
+  #     - MINIO_USESSL=0
+  #     - MINIO_ACCESSKEY=user
+  #     - MINIO_SECRETKEY=password
+  #     - SSL_KEY_PATH=../rabbitdata/privkey.pem
+  #     - SSL_CERT_PATH=../rabbitdata/fullchain.pem
+  #     - SSL=TRUE
+  #   depends_on:
+  #     - db
+  #     - minio
+  #   networks:
+  #     - prod
+
+volumes:
+  pgdata:
+  minio_data:
+    driver: local
+  rabbitdata:

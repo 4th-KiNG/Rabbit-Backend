@@ -9,13 +9,13 @@ export class Posts {
   title: string;
 
   @Column()
-  userId: string;
+  ownerId: string;
 
-  @Column("simple-array", { nullable: true })
+  @Column("simple-array")
   commentsId: string[];
 
-  @Column("simple-array", { nullable: true })
-  likeId: string[];
+  @Column("simple-array")
+  likesId: string[];
 
   @Column({ nullable: true })
   text: string;
