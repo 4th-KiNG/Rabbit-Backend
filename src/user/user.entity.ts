@@ -38,4 +38,10 @@ export class User {
 
   @Column("simple-array", { nullable: true })
   commentsId?: string[];
+
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ nullable: true })
+  banner: string;
 }

@@ -5,6 +5,7 @@ import { UserModule } from "./user/user.module";
 import { User } from "./user/user.entity";
 import { ConfigModule } from "@nestjs/config";
 import { MinioModule } from "./minio/minio.module";
+import { StaticModule } from "./static/static.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +25,7 @@ import { MinioModule } from "./minio/minio.module";
     AuthModule,
     UserModule,
     MinioModule,
+    StaticModule,
   ],
   controllers: [],
   providers: [],

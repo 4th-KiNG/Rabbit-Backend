@@ -9,13 +9,12 @@ import {
   Request,
   UseInterceptors,
   UploadedFile,
-  Response,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { JwtGuard } from "src/guard/jwt.guard";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { UpdateUserDto } from "src/dtos/user.dto";
-import { Request as Request_type, Response as Response_type } from "express";
+import { Request as Request_type } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags("user")
@@ -48,15 +47,6 @@ export class UserController {
     return "OK";
   }
 
-  @Get("avatar/:id")
-  @ApiOperation({
-    summary: "Get user's avatar",
-  })
-  @UseGuards(JwtGuard)
-  GetAvatar(@Param("id") id: string, @Response() res: Response_type) {
-    return this.userService.getAvatar(id, res);
-  }
-
   @Post("banner")
   @ApiOperation({
     summary: "Change user's banner",
@@ -70,15 +60,6 @@ export class UserController {
     const id = req["user"]["sub"];
     this.userService.changeBanner(id, file);
     return "OK";
-  }
-
-  @Get("banner/:id")
-  @ApiOperation({
-    summary: "Get user's banner",
-  })
-  @UseGuards(JwtGuard)
-  GetBanner(@Param("id") id: string, @Response() res: Response_type) {
-    return this.userService.getBanner(id, res);
   }
 
   @Get(":username")
