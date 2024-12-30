@@ -20,9 +20,9 @@ export class Posts {
   @Column({ nullable: true })
   text: string;
 
-  @Column({ nullable: true })
-  image: string;
-
   @Column()
   createDate: Date;
+
+  @Column("simple-array")
+  images: string[];
 }

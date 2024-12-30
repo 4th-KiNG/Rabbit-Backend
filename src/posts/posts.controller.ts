@@ -6,10 +6,16 @@ import {
   UseGuards,
   Request,
   Delete,
+  UseInterceptors,
+  UploadedFiles,
+  HttpException,
+  HttpStatus,
+  Req,
 } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request as Request_type } from "express";
 import { JwtGuard } from "src/guard/jwt.guard";
+import { AnyFilesInterceptor } from "@nestjs/platform-express";
 
 @Controller("posts")
 export class PostsController {
@@ -17,9 +23,14 @@ export class PostsController {
 
   @Post()
   @UseGuards(JwtGuard)
-  CreatePost(@Request() req: Request_type) {
+  @UseInterceptors(AnyFilesInterceptor())
+  CreatePost(
+    @UploadedFiles() images: Array<Express.Multer.File>,
+    @Req() req: Request_type,
+  ) {
     const id = req["user"]["sub"];
-    return this.postsService.createPost(id, req.body.title, req.body.text);
+    const { title, text } = req.body;
+    return this.postsService.createPost(id, title, text, images);
   }
 
   @Get()

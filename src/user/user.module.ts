@@ -12,4 +12,3 @@ import { MinioModule } from "src/minio/minio.module";
   exports: [UserService, TypeOrmModule],
 })
 export class UserModule {}
-

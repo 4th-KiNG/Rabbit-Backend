@@ -9,6 +9,7 @@ export class MinioService {
   private readonly minioClient: Client;
   private avatarsBucketName: string;
   private bannersBucketName: string;
+  private postsImagesBucketName: string;
   constructor(private readonly configService: ConfigService) {
     this.minioClient = new Client({
       endPoint: this.configService.get<string>("MINIO_ENDPOINT"),
@@ -18,15 +19,13 @@ export class MinioService {
       secretKey: this.configService.get<string>("MINIO_SECRETKEY"),
     });
 
-    this.avatarsBucketName = this.configService.get<string>(
-      "MINIO_AVATARS_BUCKETNAME",
-    );
-    this.bannersBucketName = this.configService.get<string>(
-      "MINIO_BANNERS_BUCKETNAME",
-    );
+    this.avatarsBucketName = process.env.MINIO_AVATARS_BUCKETNAME;
+    this.bannersBucketName = process.env.MINIO_BANNERS_BUCKETNAME;
+    this.postsImagesBucketName = process.env.MINIO_POSTSIMAGES_BUCKETNAME;
 
     this.createBucketIfNotExists(this.avatarsBucketName);
     this.createBucketIfNotExists(this.bannersBucketName);
+    this.createBucketIfNotExists(this.postsImagesBucketName);
   }
 
   async createBucketIfNotExists(name: string) {

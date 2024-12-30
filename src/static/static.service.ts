@@ -6,8 +6,8 @@ import { MinioService } from "src/minio/minio.service";
 export class StaticService {
   constructor(private readonly minioService: MinioService) {}
 
-  async getImage(busketname: string, name: string, res: Response) {
-    const image = await this.minioService.getFileAsFileStream(busketname, name);
+  async getImage(bucketname: string, name: string, res: Response) {
+    const image = await this.minioService.getFileAsFileStream(bucketname, name);
     image.pipe(res);
   }
 }

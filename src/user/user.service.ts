@@ -75,7 +75,7 @@ export class UserService {
     user.avatar = fileName;
     await this.userRepository.save(user);
     return await this.minioService.uploadFile(
-      this.configService.get<string>("MINIO_AVATARS_BUCKETNAME"),
+      process.env.MINIO_AVATARS_BUCKETNAME,
       file,
     );
   }
@@ -97,7 +97,7 @@ export class UserService {
     user.banner = fileName;
     await this.userRepository.save(user);
     return await this.minioService.uploadFile(
-      this.configService.get<string>("MINIO_BANNERS_BUCKETNAME"),
+      process.env.MINIO_BANNERS_BUCKETNAME,
       file,
     );
   }
