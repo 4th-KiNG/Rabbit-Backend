@@ -8,8 +8,6 @@ import {
   Delete,
   UseInterceptors,
   UploadedFiles,
-  HttpException,
-  HttpStatus,
   Req,
 } from "@nestjs/common";
 import { PostsService } from "./posts.service";
