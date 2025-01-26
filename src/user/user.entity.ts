@@ -25,9 +25,6 @@ export class User {
   subscriptionsId?: string[];
 
   @Column("simple-array", { nullable: true })
-  postsId?: string[];
-
-  @Column("simple-array", { nullable: true })
   subscribersId?: string[];
 
   @Column({ type: "date", nullable: true })
@@ -35,9 +32,6 @@ export class User {
 
   @Column({ nullable: true })
   sex?: Sex;
-
-  @Column("simple-array", { nullable: true })
-  commentsId?: string[];
 
   @Column({ nullable: true })
   avatar: string;

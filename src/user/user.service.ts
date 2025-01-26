@@ -120,9 +120,9 @@ export class UserService {
     }
   }
 
-  async getByUsernameUserController(username: string) {
+  async getByUserId(userId: string) {
     try {
-      const user = await this.getByUsername(username);
+      const user = await this.getById(userId);
       delete user.email;
       return user;
     } catch {

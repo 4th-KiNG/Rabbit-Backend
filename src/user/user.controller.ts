@@ -62,13 +62,13 @@ export class UserController {
     return "OK";
   }
 
-  @Get(":username")
+  @Get(":userId")
   @ApiOperation({
     summary: "Get user by username(so far you should be signed in)",
   })
   @UseGuards(JwtGuard)
-  GetUserByUsername(@Param("username") username: string) {
-    const user = this.userService.getByUsernameUserController(username);
+  GetUserByUsername(@Param("userId") userId: string) {
+    const user = this.userService.getByUserId(userId);
     return user;
   }
 
