@@ -59,6 +59,18 @@ export class PostsService {
     return this.postsRepository.find();
   }
 
+  async getAllPosts(userId: string, postId: string) {
+    const getAll = await this.postsRepository.findOneBy({ id: postId });
+    if (getAll.ownerId === userId) {
+      await this.postsRepository.find();
+      return "ok";
+    } else
+      throw new HttpException(
+        "Посты пользователя не найдены",
+        HttpStatus.BAD_REQUEST,
+      );
+  }
+
   async deletePost(userId: string, postId: string) {
     const delPost = await this.postsRepository.findOneBy({ id: postId });
     if (delPost.ownerId === userId) {
@@ -71,3 +83,4 @@ export class PostsService {
       );
   }
 }
+
