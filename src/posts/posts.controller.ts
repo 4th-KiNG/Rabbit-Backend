@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Req,
+  Query,
 } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request as Request_type } from "express";
@@ -37,11 +38,10 @@ export class PostsController {
     return this.postsService.getPosts();
   }
 
-  @Get("posts?")
+  @Get()
   @UseGuards(JwtGuard)
-  GetAllPosts(@Request() req: Request_type, @Param("postId") postId: string) {
-    const ownerId = req["user"]["sub"];
-    return this.postsService.getAllPosts(ownerId, postId);
+  async GetAllPosts(@Query("ownerId") ownerId: string) {
+    return this.postsService.getAllPosts(ownerId);
   }
 
   @Delete(":postId")

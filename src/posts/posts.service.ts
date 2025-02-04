@@ -59,16 +59,11 @@ export class PostsService {
     return this.postsRepository.find();
   }
 
-  async getAllPosts(userId: string, postId: string) {
-    const getAll = await this.postsRepository.findOneBy({ id: postId });
-    if (getAll.ownerId === userId) {
-      await this.postsRepository.find();
-      return "ok";
-    } else
-      throw new HttpException(
-        "Посты пользователя не найдены",
-        HttpStatus.BAD_REQUEST,
-      );
+  async getAllPosts(ownerId?: string) {
+    if (!ownerId) {
+      return await this.postsRepository.find();
+    }
+    return await this.postsRepository.find({ where: { ownerId } });
   }
 
   async deletePost(userId: string, postId: string) {
