@@ -19,4 +19,7 @@ export class Comment {
 
   @Column({ type: "date" })
   creationDate: Date;
+
+  @Column({ nullable: true })
+  parentId?: string;
 }
