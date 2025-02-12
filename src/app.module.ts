@@ -10,11 +10,8 @@ import { getMailConfig } from "./configs/getMailConfig";
 import { RedisModule } from "./redis/redis.module";
 import { CommentsModule } from "./comments/comments.module";
 import { Comment } from "./comments/comments.entity";
-
-import { ConfigModule } from "@nestjs/config";
 import { PostsModule } from "./posts/posts.module";
 import { Posts } from "./posts/posts.entity";
-import { MinioModule } from "./minio/minio.module";
 import { StaticModule } from "./static/static.module";
 @Module({
   imports: [
@@ -28,7 +25,7 @@ import { StaticModule } from "./static/static.module";
       username: process.env.PG_USERNAME,
       password: process.env.PG_PASSWORD,
       database: process.env.DATABASE,
-      entities: [User, Comment,Posts],
+      entities: [User, Comment, Posts],
       synchronize: true,
       //autoLoadEntities: true,
     }),
