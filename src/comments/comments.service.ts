@@ -22,16 +22,16 @@ export class CommentsService {
       creationDate: new Date(),
       parentId: parentId,
       parentType: parentType,
+      likesId: [],
     });
     return await this.commentRepository.save(newComment);
   }
 
   async getCommentTreeLevel(parentId: string, parentType: ParentType) {
-    if (parentType == ParentType.Comment) {
-      return await this.commentRepository.findBy({ parentId: parentId });
-    } else {
-      return { todo: "test" };
-    }
+    return await this.commentRepository.findBy({
+      parentId: parentId,
+      parentType: parentType,
+    });
   }
 
   async getCommentById(id: string) {

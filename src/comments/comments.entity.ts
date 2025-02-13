@@ -9,8 +9,8 @@ export class Comment {
   @Column()
   ownerId: string;
 
-  @Column("simple-array", { nullable: true })
-  likesId?: string[];
+  @Column("simple-array")
+  likesId: string[];
 
   @Column({ nullable: true })
   text?: string;
