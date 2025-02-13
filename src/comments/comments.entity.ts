@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { ParentType } from "./comments.types";
 
 @Entity()
 export class Comment {
@@ -11,9 +12,6 @@ export class Comment {
   @Column("simple-array", { nullable: true })
   likesId?: string[];
 
-  @Column("simple-array", { nullable: true })
-  commentsId?: string[];
-
   @Column({ nullable: true })
   text?: string;
 
@@ -21,5 +19,8 @@ export class Comment {
   creationDate: Date;
 
   @Column({ nullable: true })
-  parentId?: string;
+  parentId: string;
+
+  @Column()
+  parentType: ParentType;
 }

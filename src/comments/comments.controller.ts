@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Request, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Request,
+  UseGuards,
+  Get,
+} from "@nestjs/common";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "src/dtos/comment.dto";
@@ -15,5 +22,14 @@ export class CommentsController {
   Create(@Body() dto: CreateCommentDto, @Request() req: Request_type) {
     const id = req["user"]["sub"];
     return this.commentsService.createComment(id, dto);
+  }
+
+  @ApiOperation({ summary: "get comment tree's level" })
+  @Get("get")
+  GetCommentTreeLevel(@Body() dto: Omit<CreateCommentDto, "text">) {
+    return this.commentsService.getCommentTreeLevel(
+      dto.parentId,
+      dto.parentType,
+    );
   }
 }

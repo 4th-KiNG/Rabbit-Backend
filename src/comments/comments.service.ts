@@ -3,7 +3,7 @@ import { CreateCommentDto } from "src/dtos/comment.dto";
 import { Comment } from "./comments.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
-
+import { ParentType } from "./comments.types";
 @Injectable()
 export class CommentsService {
   constructor(
@@ -14,27 +14,24 @@ export class CommentsService {
   async createComment(id: string, dto: CreateCommentDto) {
     const postOwnerId = id;
     const postText = dto.text;
-    const parentId = dto.parentId ? dto.parentId : "0";
-    const newPost = this.commentRepository.create({
+    const parentId = dto.parentId;
+    const parentType = dto.parentType;
+    const newComment = await this.commentRepository.create({
       ownerId: postOwnerId,
       text: postText,
       creationDate: new Date(),
       parentId: parentId,
+      parentType: parentType,
     });
+    return await this.commentRepository.save(newComment);
+  }
 
-    await this.commentRepository.save(newPost);
-    if (dto.parentId) {
-      const parentComment = await this.getCommentById(dto.parentId);
-      if (!parentComment.commentsId) parentComment.commentsId = [];
-      parentComment.commentsId.push(newPost.id);
-      for (let i = 0; i < parentComment.commentsId.length; i++) {
-        const c = parentComment.commentsId.at(i);
-        console.log(c);
-      }
-
-      await this.commentRepository.save(parentComment);
+  async getCommentTreeLevel(parentId: string, parentType: ParentType) {
+    if (parentType == ParentType.Comment) {
+      return await this.commentRepository.findBy({ parentId: parentId });
+    } else {
+      return { todo: "test" };
     }
-    return newPost;
   }
 
   async getCommentById(id: string) {
