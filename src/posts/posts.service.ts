@@ -18,6 +18,7 @@ export class PostsService {
     title: string,
     text: string,
     images: Express.Multer.File[],
+    tags: string[],
   ) {
     const postImages = [];
     await Promise.all(
@@ -51,6 +52,7 @@ export class PostsService {
       text: text,
       createDate: new Date(),
       images: postImages,
+      tags: tags,
     });
     return await this.postsRepository.save(newPost);
   }

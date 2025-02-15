@@ -27,8 +27,8 @@ export class PostsController {
     @Req() req: Request_type,
   ) {
     const id = req["user"]["sub"];
-    const { title, text } = req.body;
-    return this.postsService.createPost(id, title, text, images);
+    const { title, text, tags } = req.body;
+    return this.postsService.createPost(id, title, text, images, tags);
   }
 
   @Get()

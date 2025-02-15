@@ -25,4 +25,7 @@ export class Posts {
 
   @Column("simple-array")
   images: string[];
+
+  @Column("simple-array")
+  tags: string[];
 }
