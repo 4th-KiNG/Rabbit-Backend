@@ -55,11 +55,7 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  async getPosts() {
-    return this.postsRepository.find();
-  }
-
-  async getAllPosts(ownerId?: string) {
+  async getPosts(ownerId?: string) {
     if (!ownerId) {
       return await this.postsRepository.find();
     }

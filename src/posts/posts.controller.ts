@@ -34,14 +34,8 @@ export class PostsController {
 
   @Get()
   @UseGuards(JwtGuard)
-  GetPosts() {
-    return this.postsService.getPosts();
-  }
-
-  @Get()
-  @UseGuards(JwtGuard)
-  async GetAllPosts(@Query("ownerId") ownerId: string) {
-    return this.postsService.getAllPosts(ownerId);
+  GetPosts(@Query("ownerId") ownerId: string) {
+    return this.postsService.getPosts(ownerId);
   }
 
   @Delete(":postId")
