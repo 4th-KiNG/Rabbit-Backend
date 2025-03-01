@@ -57,8 +57,11 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  async getPosts() {
-    return this.postsRepository.find();
+  async getPosts(ownerId?: string) {
+    if (!ownerId) {
+      return await this.postsRepository.find();
+    }
+    return await this.postsRepository.find({ where: { ownerId } });
   }
 
   async deletePost(userId: string, postId: string) {
@@ -73,3 +76,4 @@ export class PostsService {
       );
   }
 }
+

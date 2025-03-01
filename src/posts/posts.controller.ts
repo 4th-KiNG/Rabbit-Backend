@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Req,
+  Query,
 } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request as Request_type } from "express";
@@ -33,8 +34,8 @@ export class PostsController {
 
   @Get()
   @UseGuards(JwtGuard)
-  GetPosts() {
-    return this.postsService.getPosts();
+  GetPosts(@Query("ownerId") ownerId: string) {
+    return this.postsService.getPosts(ownerId);
   }
 
   @Delete(":postId")
@@ -44,3 +45,4 @@ export class PostsController {
     return this.postsService.deletePost(id, postId);
   }
 }
+
