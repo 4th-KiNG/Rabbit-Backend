@@ -7,6 +7,7 @@ import { encryptPassword } from "src/utils/auth.utils";
 import { Role } from "./user.types";
 import { MinioService } from "src/minio/minio.service";
 import { ConfigService } from "@nestjs/config";
+
 import { getMimeType, hashNameGenerate } from "src/utils/static.utils";
 @Injectable()
 export class UserService {

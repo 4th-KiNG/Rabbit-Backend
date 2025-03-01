@@ -6,7 +6,7 @@ import { User } from "src/user/user.entity";
 import { JwtModule } from "@nestjs/jwt";
 import { UserModule } from "src/user/user.module";
 import { ConfigModule } from "@nestjs/config";
-
+import { RedisModule } from "src/redis/redis.module";
 @Module({
   imports: [
     UserModule,
@@ -19,6 +19,7 @@ import { ConfigModule } from "@nestjs/config";
       secret: process.env.JWTSECRET,
       signOptions: { expiresIn: "10h" },
     }),
+    RedisModule,
   ],
   controllers: [AuthController],
   providers: [AuthService],
