@@ -11,6 +11,28 @@ export class PostsService {
     @InjectRepository(Posts)
     private readonly postsRepository: Repository<Posts>,
     private readonly minioService: MinioService,
+    private readonly prepositionsAndConjunctions: string[] = [
+      "а",
+      "без",
+      "в",
+      "для",
+      "до",
+      "за",
+      "из",
+      "к",
+      "на",
+      "над",
+      "о",
+      "об",
+      "от",
+      "по",
+      "под",
+      "при",
+      "про",
+      "с",
+      "у",
+      "через",
+    ],
   ) {}
 
   async createPost(
@@ -51,15 +73,42 @@ export class PostsService {
       text: text,
       createDate: new Date(),
       images: postImages,
+      tags: [],
     });
     return await this.postsRepository.save(newPost);
   }
 
-  async getPosts(ownerId?: string) {
-    if (!ownerId) {
+  parseSearchString(search_string: string): string[] {
+    const regexPrepositions = new RegExp(
+      `\\b(${this.prepositionsAndConjunctions.join("|")})\\b`,
+      "gi",
+    );
+
+    let cleanedString = search_string.replace(regexPrepositions, "");
+
+    return cleanedString.split(/[.,/#!$%^&*;:{}=-_`~()]+/).filter(Boolean);
+  }
+
+  async getPosts(ownerId?: string, search_string?: string) {
+    if (!ownerId || !search_string) {
       return await this.postsRepository.find();
     }
-    return await this.postsRepository.find({ where: { ownerId } });
+
+    const words = this.parseSearchString(search_string);
+
+    const posts = await this.postsRepository.find({ where: { ownerId } });
+
+    return posts.filter((post) => {
+      const postTags = post.tags;
+      let hasMatchingTag = false;
+
+      words.forEach((word) => {
+        if (postTags.includes(word)) {
+          hasMatchingTag = true;
+        }
+      });
+      return hasMatchingTag;
+    });
   }
 
   async deletePost(userId: string, postId: string) {
@@ -72,6 +121,18 @@ export class PostsService {
         "Невозможно удалить пост",
         HttpStatus.BAD_REQUEST,
       );
+  }
+
+  async likePost(userId: string, postId: string) {
+    const likePost = await this.postsRepository.findOneBy({ id: postId });
+    likePost.likesId.push(userId);
+    return await this.postsRepository.save(likePost);
+  }
+
+  async dislikePost(userId: string, postId: string) {
+    const dislikePost = await this.postsRepository.findOneBy({ id: postId });
+    dislikePost.likesId = dislikePost.likesId.filter((id) => id !== userId);
+    return await this.postsRepository.save(dislikePost);
   }
 }
 
