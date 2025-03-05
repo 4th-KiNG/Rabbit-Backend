@@ -40,6 +40,7 @@ export class PostsService {
     title: string,
     text: string,
     images: Express.Multer.File[],
+    tags: string[],
   ) {
     const postImages = [];
     await Promise.all(
@@ -73,7 +74,7 @@ export class PostsService {
       text: text,
       createDate: new Date(),
       images: postImages,
-      tags: [],
+      tags: tags ?? [],
     });
     return await this.postsRepository.save(newPost);
   }
@@ -84,7 +85,7 @@ export class PostsService {
       "gi",
     );
 
-    let cleanedString = search_string.replace(regexPrepositions, "");
+    const cleanedString = search_string.replace(regexPrepositions, "");
 
     return cleanedString.split(/[.,/#!$%^&*;:{}=-_`~()]+/).filter(Boolean);
   }
@@ -135,4 +136,3 @@ export class PostsService {
     return await this.postsRepository.save(dislikePost);
   }
 }
-
