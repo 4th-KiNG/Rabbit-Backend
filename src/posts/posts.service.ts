@@ -22,29 +22,32 @@ export class PostsService {
     tags: string[],
   ) {
     const postImages = [];
-    await Promise.all(
-      images.map(async (image) => {
-        if (
-          image.mimetype !== "image/png" &&
-          image.mimetype !== "image/jpg" &&
-          image.mimetype !== "image/jpeg"
-        ) {
-          throw new HttpException(
-            "Неверный формат изображения",
-            HttpStatus.BAD_REQUEST,
+    if (images) {
+      await Promise.all(
+        images.map(async (image) => {
+          if (
+            image.mimetype !== "image/png" &&
+            image.mimetype !== "image/jpg" &&
+            image.mimetype !== "image/jpeg"
+          ) {
+            throw new HttpException(
+              "Неверный формат изображения",
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+          const fileName =
+            (await hashNameGenerate(image.originalname)) +
+            getMimeType(image.mimetype);
+          image.originalname = fileName;
+          postImages.push(fileName);
+          await this.minioService.uploadFile(
+            process.env.MINIO_POSTSIMAGES_BUCKETNAME,
+            image,
           );
-        }
-        const fileName =
-          (await hashNameGenerate(image.originalname)) +
-          getMimeType(image.mimetype);
-        image.originalname = fileName;
-        postImages.push(fileName);
-        await this.minioService.uploadFile(
-          process.env.MINIO_POSTSIMAGES_BUCKETNAME,
-          image,
-        );
-      }),
-    );
+        }),
+      );
+    }
+
     const newPost = this.postsRepository.create({
       ownerId: id,
       title: title,
@@ -100,4 +103,3 @@ export class PostsService {
     return await this.postsRepository.save(likePost);
   }
 }
-
