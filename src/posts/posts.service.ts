@@ -52,7 +52,7 @@ export class PostsService {
       text: text,
       createDate: new Date(),
       images: postImages,
-      tags: tags,
+      tags: tags ?? [],
     });
     return await this.postsRepository.save(newPost);
   }
@@ -76,4 +76,3 @@ export class PostsService {
       );
   }
 }
-
