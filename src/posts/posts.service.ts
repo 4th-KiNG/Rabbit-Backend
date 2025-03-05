@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Posts } from "./posts.entity";
 import { MinioService } from "src/minio/minio.service";
 import { getMimeType, hashNameGenerate } from "src/utils/static.utils";
+import { parseSearchString } from "src/utils/posts.utils";
 
 @Injectable()
 export class PostsService {
@@ -11,28 +12,6 @@ export class PostsService {
     @InjectRepository(Posts)
     private readonly postsRepository: Repository<Posts>,
     private readonly minioService: MinioService,
-    private readonly prepositionsAndConjunctions: string[] = [
-      "а",
-      "без",
-      "в",
-      "для",
-      "до",
-      "за",
-      "из",
-      "к",
-      "на",
-      "над",
-      "о",
-      "об",
-      "от",
-      "по",
-      "под",
-      "при",
-      "про",
-      "с",
-      "у",
-      "через",
-    ],
   ) {}
 
   async createPost(
@@ -79,23 +58,12 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  parseSearchString(search_string: string): string[] {
-    const regexPrepositions = new RegExp(
-      `\\b(${this.prepositionsAndConjunctions.join("|")})\\b`,
-      "gi",
-    );
-
-    const cleanedString = search_string.replace(regexPrepositions, "");
-
-    return cleanedString.split(/[.,/#!$%^&*;:{}=-_`~()]+/).filter(Boolean);
-  }
-
   async getPosts(ownerId?: string, search_string?: string) {
     if (!ownerId || !search_string) {
       return await this.postsRepository.find();
     }
 
-    const words = this.parseSearchString(search_string);
+    const words = parseSearchString(search_string);
 
     const posts = await this.postsRepository.find({ where: { ownerId } });
 
@@ -124,15 +92,12 @@ export class PostsService {
       );
   }
 
-  async likePost(userId: string, postId: string) {
+  async likePost(userId: string, status: "like" | "dislike", postId: string) {
     const likePost = await this.postsRepository.findOneBy({ id: postId });
-    likePost.likesId.push(userId);
+    if (status == "like") {
+      likePost.likesId.push(userId);
+    } else likePost.likesId.filter((id) => id !== userId);
     return await this.postsRepository.save(likePost);
   }
-
-  async dislikePost(userId: string, postId: string) {
-    const dislikePost = await this.postsRepository.findOneBy({ id: postId });
-    dislikePost.likesId = dislikePost.likesId.filter((id) => id !== userId);
-    return await this.postsRepository.save(dislikePost);
-  }
 }
+
