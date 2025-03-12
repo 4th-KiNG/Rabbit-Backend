@@ -27,6 +27,36 @@ export class CommentsService {
     return await this.commentRepository.save(newComment);
   }
 
+  async deleteComment(
+    commentId: string,
+    parentType: ParentType,
+    userId: string,
+  ) {
+    const toDelete = await this.getCommentById(commentId);
+    if (toDelete.ownerId != userId)
+      throw new HttpException(
+        "Недостаточно прав для удаления",
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const replies = await this.commentRepository.findBy({
+      parentId: commentId,
+      parentType: ParentType.Comment,
+    });
+
+    for (const e of replies) {
+      await this.commentRepository.delete({
+        id: e.id,
+        parentType: e.parentType,
+      });
+    }
+
+    return await this.commentRepository.delete({
+      id: commentId,
+      parentType: parentType,
+    });
+  }
+
   async getCommentTreeLevel(parentId: string, parentType: ParentType) {
     return await this.commentRepository.findBy({
       parentId: parentId,

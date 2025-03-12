@@ -6,6 +6,7 @@ import {
   UseGuards,
   Get,
   Query,
+  Delete,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { CommentsService } from "./comments.service";
@@ -24,6 +25,24 @@ export class CommentsController {
   Create(@Body() dto: CreateCommentDto, @Request() req: Request_type) {
     const id = req["user"]["sub"];
     return this.commentsService.createComment(id, dto);
+  }
+
+  @ApiOperation({ summary: "delete comment" })
+  @Delete()
+  @UseGuards(JwtGuard)
+  Delete(
+    @Query("commentId") commentId: string,
+    @Query("parentType") parentType: string,
+    @Request() req: Request_type,
+  ) {
+    const userId = req["user"]["sub"];
+    return this.commentsService.deleteComment(
+      commentId,
+      parentType.toLowerCase() == "comment"
+        ? ParentType.Comment
+        : ParentType.Post,
+      userId,
+    );
   }
 
   @ApiOperation({ summary: "get comment tree's level" })
