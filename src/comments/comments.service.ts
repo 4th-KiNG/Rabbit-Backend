@@ -27,12 +27,24 @@ export class CommentsService {
     return await this.commentRepository.save(newComment);
   }
 
+  async addLike(commentId: string, parentType: ParentType, userId: string) {
+    const comment = await this.commentRepository.findOneBy({
+      id: commentId,
+      parentType: parentType,
+    });
+    comment.likesId.push(userId);
+    return this.commentRepository.save(comment);
+  }
+
   async deleteComment(
     commentId: string,
     parentType: ParentType,
     userId: string,
   ) {
-    const toDelete = await this.getCommentById(commentId);
+    const toDelete = await this.commentRepository.findOneBy({
+      id: commentId,
+      parentType: parentType,
+    });
     if (toDelete.ownerId != userId)
       throw new HttpException(
         "Недостаточно прав для удаления",
@@ -62,13 +74,5 @@ export class CommentsService {
       parentId: parentId,
       parentType: parentType,
     });
-  }
-
-  async getCommentById(id: string) {
-    try {
-      return await this.commentRepository.findOneBy({ id: id });
-    } catch {
-      throw new HttpException("Комментарий не найден", HttpStatus.NOT_FOUND);
-    }
   }
 }

@@ -27,6 +27,24 @@ export class CommentsController {
     return this.commentsService.createComment(id, dto);
   }
 
+  @ApiOperation({ summary: "add like to a comment" })
+  @Post()
+  @UseGuards(JwtGuard)
+  AddLike(
+    @Query("commentId") commentId: string,
+    @Query("parentType") parentType: string,
+    @Request() req: Request_type,
+  ) {
+    const userId = req["user"]["sub"];
+    return this.commentsService.addLike(
+      commentId,
+      parentType.toLowerCase() == "comment"
+        ? ParentType.Comment
+        : ParentType.Post,
+      userId,
+    );
+  }
+
   @ApiOperation({ summary: "delete comment" })
   @Delete()
   @UseGuards(JwtGuard)
