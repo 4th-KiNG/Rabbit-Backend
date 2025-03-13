@@ -34,8 +34,11 @@ export class PostsController {
 
   @Get()
   @UseGuards(JwtGuard)
-  GetPosts(@Query("ownerId") ownerId: string) {
-    return this.postsService.getPosts(ownerId);
+  GetPosts(
+    @Query("ownerId") ownerId: string,
+    @Query("search_string") search_string: string,
+  ) {
+    return this.postsService.getPosts(ownerId, search_string);
   }
 
   @Delete(":postId")
@@ -43,5 +46,16 @@ export class PostsController {
   DeletePost(@Request() req: Request_type, @Param("postId") postId: string) {
     const id = req["user"]["sub"];
     return this.postsService.deletePost(id, postId);
+  }
+
+  @Post(":postId")
+  @UseGuards(JwtGuard)
+  LikePost(
+    @Request() req: Request_type,
+    @Query("status") status: "like" | "dislike",
+    @Param("postId") postId: string,
+  ) {
+    const id = req["user"]["sub"];
+    return this.postsService.likePost(id, status, postId);
   }
 }

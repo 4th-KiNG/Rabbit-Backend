@@ -37,7 +37,7 @@
     "class-validator": "^0.14.1",
     "express": "^4.21.2",
     "minio": "^8.0.2",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^6.10.0",
     "pg": "^8.13.0",
     "redis": "^4.7.0",
     "reflect-metadata": "^0.2.0",
