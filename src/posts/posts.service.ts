@@ -62,25 +62,27 @@ export class PostsService {
   }
 
   async getPosts(ownerId?: string, search_string?: string) {
-    if (!ownerId || !search_string) {
-      return await this.postsRepository.find();
+    let posts = await this.postsRepository.find();
+
+    if (ownerId) {
+      posts = await this.postsRepository.find({ where: { ownerId } });
     }
 
-    const words = parseSearchString(search_string);
-
-    const posts = await this.postsRepository.find({ where: { ownerId } });
-
-    return posts.filter((post) => {
-      const postTags = post.tags;
-      let hasMatchingTag = false;
-
-      words.forEach((word) => {
-        if (postTags.includes(word)) {
-          hasMatchingTag = true;
-        }
+    if (search_string) {
+      const words = parseSearchString(search_string);
+      posts = posts.filter((post) => {
+        const postTags = post.tags;
+        let hasMatchingTag = false;
+        words.forEach((word) => {
+          if (postTags.includes(word)) {
+            hasMatchingTag = true;
+          }
+        });
+        return hasMatchingTag;
       });
-      return hasMatchingTag;
-    });
+    }
+
+    return posts;
   }
 
   async deletePost(userId: string, postId: string) {

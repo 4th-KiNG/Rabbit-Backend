@@ -1,5 +1,3 @@
-import { promisify } from "util";
-
 export const prepositionsAndConjunctions: string[] = [
   "а",
   "без",
@@ -25,7 +23,7 @@ export const prepositionsAndConjunctions: string[] = [
 
 export function parseSearchString(search_string: string): string[] {
   const regexPrepositions = new RegExp(
-    `\\b(${this.prepositionsAndConjunctions.join("|")})\\b`,
+    `\\b(${prepositionsAndConjunctions.join("|")})\\b`,
     "gi",
   );
 
@@ -33,4 +31,3 @@ export function parseSearchString(search_string: string): string[] {
 
   return cleanedString.split(/[.,/#!$%^&*;:{}=-_`~()]+/).filter(Boolean);
 }
-
