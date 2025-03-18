@@ -82,7 +82,20 @@ export class PostsService {
       });
     }
 
-    return posts;
+    return posts.sort((post1, post2) => {
+      if (post1.createDate < post2.createDate) return 1;
+      else return -1;
+    });
+  }
+
+  async getLikes(postId: string) {
+    const postLikes = (await this.postsRepository.findOneBy({ id: postId }))
+      .likesId;
+    return postLikes;
+  }
+
+  async getPost(postId: string) {
+    return this.postsRepository.findOneBy({ id: postId });
   }
 
   async deletePost(userId: string, postId: string) {
@@ -98,10 +111,15 @@ export class PostsService {
   }
 
   async likePost(userId: string, status: "like" | "dislike", postId: string) {
-    const likePost = await this.postsRepository.findOneBy({ id: postId });
+    let likePost = await this.postsRepository.findOneBy({ id: postId });
     if (status == "like") {
       likePost.likesId.push(userId);
-    } else likePost.likesId.filter((id) => id !== userId);
+    } else {
+      likePost = {
+        ...likePost,
+        likesId: likePost.likesId.filter((id) => id !== userId),
+      };
+    }
     return await this.postsRepository.save(likePost);
   }
 }

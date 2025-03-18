@@ -5,15 +5,14 @@ import {
   Param,
   UseGuards,
   Patch,
-  Body,
   Request,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { JwtGuard } from "src/guard/jwt.guard";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
-import { UpdateUserDto } from "src/dtos/user.dto";
 import { Request as Request_type } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
 
@@ -72,13 +71,24 @@ export class UserController {
     return user;
   }
 
-  @Patch()
-  @ApiOperation({
-    summary: "Update username, birth date, sex",
-  })
+  @Patch(":userId")
   @UseGuards(JwtGuard)
-  UpdateUser(@Request() req: Request_type, @Body() dto: UpdateUserDto) {
+  SubscribeUser(
+    @Request() req: Request_type,
+    @Param("userId") userId: string,
+    @Query("status") status: "subscribe" | "unsubscribe",
+  ) {
     const id = req["user"]["sub"];
-    return this.userService.update(id, dto);
+    return this.userService.subscribeUser(userId, id, status);
   }
+
+  // @Patch()
+  // @ApiOperation({
+  //   summary: "Update username, birth date, sex",
+  // })
+  // @UseGuards(JwtGuard)
+  // UpdateUser(@Request() req: Request_type, @Body() dto: UpdateUserDto) {
+  //   const id = req["user"]["sub"];
+  //   return this.userService.update(id, dto);
+  // }
 }

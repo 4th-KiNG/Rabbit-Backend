@@ -40,6 +40,8 @@ export class UserService {
       password: await encryptPassword(newUserPassword),
       regDate: new Date(),
       role: Role.BasicUser,
+      subscribersId: [],
+      subscriptionsId: [],
     });
     return await this.userRepository.save(newUser);
   }
@@ -137,5 +139,38 @@ export class UserService {
     } catch {
       throw new HttpException("Пользователь не найден", HttpStatus.NOT_FOUND);
     }
+  }
+
+  async subscribeUser(
+    userId: string,
+    subsId: string,
+    status: "subscribe" | "unsubscribe",
+  ) {
+    let user = await this.userRepository.findOneBy({ id: userId });
+    let subsUser = await this.userRepository.findOneBy({ id: subsId });
+    if (userId !== subsId) {
+      if (
+        status === "subscribe" &&
+        !user.subscribersId.includes(subsId) &&
+        !subsUser.subscriptionsId.includes(userId)
+      ) {
+        user.subscribersId.push(subsId);
+        subsUser.subscriptionsId.push(userId);
+      } else {
+        user = {
+          ...user,
+          subscribersId: user.subscribersId.filter((sub) => sub !== subsId),
+        };
+        subsUser = {
+          ...subsUser,
+          subscriptionsId: subsUser.subscriptionsId.filter(
+            (sub) => sub !== userId,
+          ),
+        };
+      }
+      this.userRepository.save(user);
+      this.userRepository.save(subsUser);
+    }
+    return "OK";
   }
 }

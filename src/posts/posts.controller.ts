@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   Req,
   Query,
+  Patch,
 } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request as Request_type } from "express";
@@ -41,6 +42,12 @@ export class PostsController {
     return this.postsService.getPosts(ownerId, search_string);
   }
 
+  @Get(":postId")
+  @UseGuards(JwtGuard)
+  GetPost(@Param("postId") postId: string) {
+    return this.postsService.getPost(postId);
+  }
+
   @Delete(":postId")
   @UseGuards(JwtGuard)
   DeletePost(@Request() req: Request_type, @Param("postId") postId: string) {
@@ -48,7 +55,13 @@ export class PostsController {
     return this.postsService.deletePost(id, postId);
   }
 
-  @Post(":postId")
+  @Get(":postId/likes")
+  @UseGuards(JwtGuard)
+  GetLikes(@Param("postId") postId: string) {
+    return this.postsService.getLikes(postId);
+  }
+
+  @Patch(":postId/likes")
   @UseGuards(JwtGuard)
   LikePost(
     @Request() req: Request_type,
