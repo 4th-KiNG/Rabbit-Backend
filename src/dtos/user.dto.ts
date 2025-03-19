@@ -66,3 +66,17 @@ export class CheckVerificationDto {
   @ApiProperty({ example: "1111", description: "Verification code" })
   code: string;
 }
+
+export class ChangePasswordDto {
+  @IsString()
+  @ApiProperty({ example: "123", description: "User's old password" })
+  oldPassword: string;
+
+  @IsString()
+  @ApiProperty({ example: "666", description: "User's new password" })
+  newPassword: string;
+
+  @IsString()
+  @ApiProperty({ example: "666", description: "Confirm the new password" })
+  newPassword2: string;
+}

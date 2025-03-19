@@ -2,8 +2,12 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { Repository } from "typeorm";
-import { CreateUserDto, UpdateUserDto } from "src/dtos/user.dto";
-import { encryptPassword } from "src/utils/auth.utils";
+import {
+  ChangePasswordDto,
+  CreateUserDto,
+  UpdateUserDto,
+} from "src/dtos/user.dto";
+import { checkPassword, encryptPassword } from "src/utils/auth.utils";
 import { Role } from "./user.types";
 import { MinioService } from "src/minio/minio.service";
 import { ConfigService } from "@nestjs/config";
@@ -20,6 +24,27 @@ export class UserService {
 
   async save(user: User) {
     this.userRepository.save(user);
+  }
+
+  async changePassword(id: string, dto: ChangePasswordDto) {
+    const user = await this.userRepository.findOneBy({ id: id });
+    //  console.log(user);
+    if (
+      !(await checkPassword(
+        { email: user.email, password: dto.oldPassword },
+        user.password,
+      ))
+    )
+      throw new HttpException("Неверный старый пароль", HttpStatus.BAD_REQUEST);
+
+    const newPassword = dto.newPassword;
+    const newPassword2 = dto.newPassword2;
+
+    if (newPassword != newPassword2)
+      throw new HttpException("Пароли не совпадают", HttpStatus.BAD_REQUEST);
+    user.password = await encryptPassword(newPassword);
+    this.save(user);
+    return "ok";
   }
 
   async create(dto: CreateUserDto) {
