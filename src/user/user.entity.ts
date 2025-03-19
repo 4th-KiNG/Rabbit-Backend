@@ -21,11 +21,11 @@ export class User {
   @Column()
   role: Role;
 
-  @Column("simple-array", { nullable: true })
-  subscriptionsId?: string[];
+  @Column("simple-array")
+  subscriptionsId: string[];
 
-  @Column("simple-array", { nullable: true })
-  subscribersId?: string[];
+  @Column("simple-array")
+  subscribersId: string[];
 
   @Column({ type: "date", nullable: true })
   birthDate?: Date;
