@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { CreateUserDto, SignInDto } from "src/dtos/user.dto";
 import { UserService } from "src/user/user.service";
-import { checkPassword } from "src/utils/auth.utils";
+import { checkPassword, encryptPassword } from "src/utils/auth.utils";
 import { MailerService } from "@nestjs-modules/mailer";
 import { join } from "path";
 import { randomInt } from "crypto";
@@ -15,6 +15,35 @@ export class AuthService {
     private readonly mailerService: MailerService,
     private readonly redisService: RedisService,
   ) {}
+
+  async recoverPassword(email: string) {
+    const user = await this.userService.getByEmail(email);
+    if (!user)
+      throw new HttpException(
+        "Пользователя с такой почтой не существует",
+        HttpStatus.NOT_FOUND,
+      );
+    const newPassword = `${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}`;
+    user.password = await encryptPassword(newPassword);
+    await this.mailerService
+      .sendMail({
+        to: email,
+        subject: "Восстановление пароля",
+        template: join(__dirname, "/../templates", "restorePassword"),
+        context: {
+          newPassword,
+        },
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new HttpException(
+          `Ошибка работы почты: ${JSON.stringify(e)}`,
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      });
+    this.userService.save(user);
+    return "ok";
+  }
 
   async sendVerificationEmail(email: string, username: string) {
     const verificationCode = `${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}`;

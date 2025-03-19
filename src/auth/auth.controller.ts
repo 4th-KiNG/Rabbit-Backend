@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Get, Controller, Post, Query } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import {
   CheckVerificationDto,
@@ -28,6 +28,12 @@ export class AuthController {
   @ApiOperation({ summary: "Sign Up" })
   SignUp(@Body() dto: CreateUserDto) {
     return this.authService.signUp(dto);
+  }
+
+  @Get("recoverPassword")
+  @ApiOperation({ summary: "Recover password" })
+  RecoverPassword(@Query("email") email: string) {
+    return this.authService.recoverPassword(email);
   }
 
   @Post("signin")

@@ -18,6 +18,10 @@ export class UserService {
     private readonly configService: ConfigService,
   ) {}
 
+  async save(user: User) {
+    this.userRepository.save(user);
+  }
+
   async create(dto: CreateUserDto) {
     const newUserEmail = dto.email;
     const newUserUsername = dto.username;
