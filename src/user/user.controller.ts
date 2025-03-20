@@ -9,12 +9,14 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  Body,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { JwtGuard } from "src/guard/jwt.guard";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { Request as Request_type } from "express";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ChangePasswordDto } from "src/dtos/user.dto";
 
 @ApiTags("user")
 @Controller("user")
@@ -29,6 +31,16 @@ export class UserController {
     const id = req["user"]["sub"];
     const user = this.userService.getById(id);
     return user;
+  }
+
+  @Post("changePassword")
+  @ApiOperation({
+    summary: "Change user's password",
+  })
+  @UseGuards(JwtGuard)
+  ChangePassword(@Body() dto: ChangePasswordDto, @Request() req: Request_type) {
+    const id = req["user"]["sub"];
+    return this.userService.changePassword(id, dto);
   }
 
   @Post("avatar")
