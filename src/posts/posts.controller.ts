@@ -15,13 +15,18 @@ import {
 import { PostsService } from "./posts.service";
 import { Request as Request_type } from "express";
 import { JwtGuard } from "src/guard/jwt.guard";
+import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { AnyFilesInterceptor } from "@nestjs/platform-express";
 
+@ApiTags("posts")
 @Controller("posts")
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @ApiOperation({
+    summary: "Create post",
+  })
   @UseGuards(JwtGuard)
   @UseInterceptors(AnyFilesInterceptor())
   CreatePost(
@@ -34,6 +39,9 @@ export class PostsController {
   }
 
   @Get()
+  @ApiOperation({
+    summary: "Getting all posts with(without) tags ",
+  })
   @UseGuards(JwtGuard)
   GetPosts(
     @Query("ownerId") ownerId: string,
@@ -43,12 +51,18 @@ export class PostsController {
   }
 
   @Get(":postId")
+  @ApiOperation({
+    summary: "Getting post by id ",
+  })
   @UseGuards(JwtGuard)
   GetPost(@Param("postId") postId: string) {
     return this.postsService.getPost(postId);
   }
 
   @Delete(":postId")
+  @ApiOperation({
+    summary: "Delete post",
+  })
   @UseGuards(JwtGuard)
   DeletePost(@Request() req: Request_type, @Param("postId") postId: string) {
     const id = req["user"]["sub"];
@@ -56,12 +70,18 @@ export class PostsController {
   }
 
   @Get(":postId/likes")
+  @ApiOperation({
+    summary: "Getting liked posts",
+  })
   @UseGuards(JwtGuard)
   GetLikes(@Param("postId") postId: string) {
     return this.postsService.getLikes(postId);
   }
 
   @Patch(":postId/likes")
+  @ApiOperation({
+    summary: "Dis/Liking posts",
+  })
   @UseGuards(JwtGuard)
   LikePost(
     @Request() req: Request_type,
@@ -72,3 +92,4 @@ export class PostsController {
     return this.postsService.likePost(id, status, postId);
   }
 }
+
