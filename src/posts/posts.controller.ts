@@ -92,4 +92,3 @@ export class PostsController {
     return this.postsService.likePost(id, status, postId);
   }
 }
-

@@ -16,7 +16,7 @@ export class CommentsService {
     const postText = dto.text;
     const parentId = dto.parentId;
     const parentType = dto.parentType;
-    const newComment = await this.commentRepository.create({
+    const newComment = this.commentRepository.create({
       ownerId: postOwnerId,
       text: postText,
       creationDate: new Date(),
