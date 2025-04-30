@@ -61,36 +61,25 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  async getPosts(
-    ownerId?: string,
-    search_string?: string,
-    page?: number,
-    limit: number = 10,
-  ) {
-    let query = this.postsRepository.createQueryBuilder("post");
+  async getPosts(ownerId?: string, search_string?: string, page?: number) {
+    const query = this.postsRepository
+      .createQueryBuilder("post")
+      .orderBy("post.createDate", "DESC");
 
-    if (ownerId) {
-      query = query.where("post.ownerId = :ownerId", { ownerId });
-    }
+    if (ownerId) query.where("post.ownerId = :ownerId", { ownerId });
 
     if (search_string) {
       const words = parseSearchString(search_string);
-      words.forEach((word) => {
-        query.andWhere(
-          words.map((word) => `post.tags LIKE '%${word}%'`).join(" OR "),
-        );
-      });
+      query.andWhere(
+        words.map((word) => `post.tags LIKE '%${word}%'`).join(" OR "),
+      );
     }
 
-    query.orderBy("post.createDate", "DESC");
-
-    if (page === undefined) {
-      const posts = await query.getMany();
-      return posts;
+    if (page !== undefined) {
+      query.skip((page - 1) * 10).take(10);
     }
 
-    const skip = (page - 1) * limit;
-    return query.skip(skip).take(limit).getMany();
+    return query.getMany();
   }
 
   async getLikes(postId: string) {
