@@ -32,7 +32,8 @@ export class CommentsService {
       id: commentId,
       parentType: parentType,
     });
-    comment.likesId.push(userId);
+    if (!comment.likesId.includes(userId)) comment.likesId.push(userId);
+    else comment.likesId = comment.likesId.filter((id) => id != userId);
     return this.commentRepository.save(comment);
   }
 

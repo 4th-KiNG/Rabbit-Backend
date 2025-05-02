@@ -117,4 +117,3 @@ export class PostsService {
     return await this.postsRepository.save(likePost);
   }
 }
-
