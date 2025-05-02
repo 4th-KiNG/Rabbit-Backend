@@ -75,11 +75,18 @@ export class PostsService {
       );
     }
 
+    const total = await query.getCount();
+
     if (page !== undefined) {
       query.skip((page - 1) * 10).take(10);
     }
 
-    return query.getMany();
+    const posts = await query.getMany();
+
+    return {
+      posts,
+      total,
+    };
   }
 
   async getLikes(postId: string) {
