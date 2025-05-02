@@ -51,7 +51,7 @@ export class CommentsService {
         "Недостаточно прав для удаления",
         HttpStatus.BAD_REQUEST,
       );
-
+    toDelete.likesId.splice(0, toDelete.likesId.length);
     const replies = await this.commentRepository.findBy({
       parentId: commentId,
       parentType: ParentType.Comment,
