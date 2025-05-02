@@ -46,8 +46,9 @@ export class PostsController {
   GetPosts(
     @Query("ownerId") ownerId: string,
     @Query("search_string") search_string: string,
+    @Query("page") page?: number,
   ) {
-    return this.postsService.getPosts(ownerId, search_string);
+    return this.postsService.getPosts(ownerId, search_string, page);
   }
 
   @Get(":postId")

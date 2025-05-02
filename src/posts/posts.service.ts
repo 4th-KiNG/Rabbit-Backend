@@ -61,31 +61,25 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  async getPosts(ownerId?: string, search_string?: string) {
-    let posts = await this.postsRepository.find();
+  async getPosts(ownerId?: string, search_string?: string, page?: number) {
+    const query = this.postsRepository
+      .createQueryBuilder("post")
+      .orderBy("post.createDate", "DESC");
 
-    if (ownerId) {
-      posts = await this.postsRepository.find({ where: { ownerId } });
-    }
+    if (ownerId) query.where("post.ownerId = :ownerId", { ownerId });
 
     if (search_string) {
       const words = parseSearchString(search_string);
-      posts = posts.filter((post) => {
-        const postTags = post.tags;
-        let hasMatchingTag = false;
-        words.forEach((word) => {
-          if (postTags.includes(word)) {
-            hasMatchingTag = true;
-          }
-        });
-        return hasMatchingTag;
-      });
+      query.andWhere(
+        words.map((word) => `post.tags LIKE '%${word}%'`).join(" OR "),
+      );
     }
 
-    return posts.sort((post1, post2) => {
-      if (post1.createDate < post2.createDate) return 1;
-      else return -1;
-    });
+    if (page !== undefined) {
+      query.skip((page - 1) * 10).take(10);
+    }
+
+    return query.getMany();
   }
 
   async getLikes(postId: string) {
@@ -123,3 +117,4 @@ export class PostsService {
     return await this.postsRepository.save(likePost);
   }
 }
+
