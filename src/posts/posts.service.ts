@@ -70,9 +70,19 @@ export class PostsService {
 
     if (search_string) {
       const words = parseSearchString(search_string);
-      query.andWhere(
-        words.map((word) => `post.tags LIKE '%${word}%'`).join(" OR "),
-      );
+      if (words.length > 0) {
+        const searchConditions = words
+          .map((word) => {
+            return `(
+            post.tags LIKE '%${word}%' OR 
+            post.title LIKE '%${word}%' OR 
+            post.text LIKE '%${word}%'
+          )`;
+          })
+          .join(" AND ");
+
+        query.andWhere(`(${searchConditions})`);
+      }
     }
 
     const total = await query.getCount();
