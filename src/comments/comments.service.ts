@@ -16,7 +16,7 @@ export class CommentsService {
     const postText = dto.text;
     const parentId = dto.parentId;
     const parentType = dto.parentType;
-    const newComment = await this.commentRepository.create({
+    const newComment = this.commentRepository.create({
       ownerId: postOwnerId,
       text: postText,
       creationDate: new Date(),
@@ -32,7 +32,8 @@ export class CommentsService {
       id: commentId,
       parentType: parentType,
     });
-    comment.likesId.push(userId);
+    if (!comment.likesId.includes(userId)) comment.likesId.push(userId);
+    else comment.likesId = comment.likesId.filter((id) => id != userId);
     return this.commentRepository.save(comment);
   }
 
@@ -50,7 +51,7 @@ export class CommentsService {
         "Недостаточно прав для удаления",
         HttpStatus.BAD_REQUEST,
       );
-
+    toDelete.likesId.splice(0, toDelete.likesId.length);
     const replies = await this.commentRepository.findBy({
       parentId: commentId,
       parentType: ParentType.Comment,

@@ -7,6 +7,7 @@ import {
   Get,
   Query,
   Delete,
+  Patch,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation } from "@nestjs/swagger";
 import { CommentsService } from "./comments.service";
@@ -14,10 +15,30 @@ import { CreateCommentDto } from "src/dtos/comment.dto";
 import { Request as Request_type } from "express";
 import { JwtGuard } from "src/guard/jwt.guard";
 import { ParentType } from "./comments.types";
+
 @ApiTags("comments")
 @Controller("comments")
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
+
+  @ApiOperation({ summary: "like or unlike post" })
+  @Patch("like")
+  @UseGuards(JwtGuard)
+  Like(
+    @Request() req: Request_type,
+    @Body() data: { commentId: string; parentType: string },
+  ) {
+    const commentId = data.commentId;
+    const parentType = data.parentType;
+    const id = req["user"]["sub"];
+    return this.commentsService.addLike(
+      commentId,
+      parentType.toLowerCase() == "comment"
+        ? ParentType.Comment
+        : ParentType.Post,
+      id,
+    );
+  }
 
   @ApiOperation({ summary: "create comment" })
   @Post("create")

@@ -26,6 +26,24 @@ export class UserService {
     this.userRepository.save(user);
   }
 
+  async getSubscribers(userId: string) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const subscribers: User[] = [];
+    for (const subId of user.subscribersId) {
+      subscribers.push(await this.getByUserId(subId));
+    }
+    return subscribers;
+  }
+
+  async getSubscriptions(userId: string) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const subscriptions: User[] = [];
+    for (const subId of user.subscriptionsId) {
+      subscriptions.push(await this.getByUserId(subId));
+    }
+    return subscriptions;
+  }
+
   async changePassword(id: string, dto: ChangePasswordDto) {
     const user = await this.userRepository.findOneBy({ id: id });
     //  console.log(user);

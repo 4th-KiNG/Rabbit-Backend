@@ -27,6 +27,7 @@ import { StaticModule } from "./static/static.module";
       database: process.env.DATABASE,
       entities: [User, Comment, Posts],
       synchronize: true,
+      dropSchema: process.env.IS_PROD === "FALSE",
       //autoLoadEntities: true,
     }),
     MailerModule.forRootAsync({
