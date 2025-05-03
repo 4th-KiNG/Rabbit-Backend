@@ -4,11 +4,16 @@ import { Comment } from "./comments.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ParentType } from "./comments.types";
+import { MailerService } from "@nestjs-modules/mailer";
+import { join } from "path";
+import { UserService } from "src/user/user.service";
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    private readonly userService: UserService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async createComment(id: string, dto: CreateCommentDto) {
@@ -32,9 +37,18 @@ export class CommentsService {
       id: commentId,
       parentType: parentType,
     });
+    console.log(comment);
     if (!comment.likesId.includes(userId)) comment.likesId.push(userId);
     else comment.likesId = comment.likesId.filter((id) => id != userId);
     return this.commentRepository.save(comment);
+  }
+
+  async getLikes(commentId: string, parentType: ParentType) {
+    const comment = await this.commentRepository.findOneBy({
+      id: commentId,
+      parentType: parentType,
+    });
+    return comment?.likesId ?? [];
   }
 
   async deleteComment(
@@ -75,5 +89,27 @@ export class CommentsService {
       parentId: parentId,
       parentType: parentType,
     });
+  }
+
+  async sendReport(userId: string, commentId: string, reason: string) {
+    const user = await this.userService.getById(userId);
+    const comment = await this.commentRepository.findOneBy({ id: commentId });
+    await this.mailerService.sendMail({
+      to: process.env.WORK_EMAIL,
+      subject: "Жалоба на комментарий",
+      template: join(__dirname, "/../templates", "reportComment"),
+      context: {
+        reason: reason,
+        userUrl: `${process.env.CURRENT_HOST}/user/${user.id}`,
+        commentId: `${comment.id}`,
+        userEmail: user.email,
+      },
+    });
+    return "ok";
+  }
+
+  async getCommentsByOwner(ownerId: string) {
+    const comments = await this.commentRepository.findBy({ ownerId: ownerId });
+    return comments;
   }
 }

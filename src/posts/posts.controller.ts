@@ -11,6 +11,7 @@ import {
   Req,
   Query,
   Patch,
+  Body,
 } from "@nestjs/common";
 import { PostsService } from "./posts.service";
 import { Request as Request_type } from "express";
@@ -87,5 +88,19 @@ export class PostsController {
   LikePost(@Request() req: Request_type, @Param("postId") postId: string) {
     const id = req["user"]["sub"];
     return this.postsService.likePost(id, postId);
+  }
+
+  @Post(":postId/report")
+  @ApiOperation({
+    summary: "Report to post",
+  })
+  @UseGuards(JwtGuard)
+  ReportPost(
+    @Request() req: Request_type,
+    @Body() data: { reason: string },
+    @Param("postId") postId: string,
+  ) {
+    const id = req["user"]["sub"];
+    return this.postsService.sendReport(id, postId, data.reason);
   }
 }

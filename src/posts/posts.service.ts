@@ -5,6 +5,9 @@ import { Posts } from "./posts.entity";
 import { MinioService } from "src/minio/minio.service";
 import { getMimeType, hashNameGenerate } from "src/utils/static.utils";
 import { parseSearchString } from "src/utils/posts.utils";
+import { UserService } from "src/user/user.service";
+import { MailerService } from "@nestjs-modules/mailer";
+import { join } from "path";
 
 @Injectable()
 export class PostsService {
@@ -12,6 +15,8 @@ export class PostsService {
     @InjectRepository(Posts)
     private readonly postsRepository: Repository<Posts>,
     private readonly minioService: MinioService,
+    private readonly userService: UserService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async createPost(
@@ -90,8 +95,8 @@ export class PostsService {
   }
 
   async getLikes(postId: string) {
-    const postLikes = (await this.postsRepository.findOneBy({ id: postId }))
-      .likesId;
+    const postLikes =
+      (await this.postsRepository.findOneBy({ id: postId }))?.likesId ?? [];
     return postLikes;
   }
 
@@ -116,5 +121,22 @@ export class PostsService {
     if (!likePost.likesId.includes(userId)) likePost.likesId.push(userId);
     else likePost.likesId = likePost.likesId.filter((id) => id != userId);
     return await this.postsRepository.save(likePost);
+  }
+
+  async sendReport(userId: string, postId: string, reason: string) {
+    const user = await this.userService.getById(userId);
+    const post = await this.postsRepository.findOneBy({ id: postId });
+    await this.mailerService.sendMail({
+      to: process.env.WORK_EMAIL,
+      subject: "Жалоба на пост",
+      template: join(__dirname, "/../templates", "reportPost"),
+      context: {
+        reason: reason,
+        userUrl: `${process.env.CURRENT_HOST}/user/${user.id}`,
+        postUrl: `${process.env.CURRENT_HOST}/post/${post.id}`,
+        userEmail: user.email,
+      },
+    });
+    return "ok";
   }
 }
