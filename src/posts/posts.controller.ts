@@ -84,12 +84,8 @@ export class PostsController {
     summary: "Dis/Liking posts",
   })
   @UseGuards(JwtGuard)
-  LikePost(
-    @Request() req: Request_type,
-    @Query("status") status: "like" | "dislike",
-    @Param("postId") postId: string,
-  ) {
+  LikePost(@Request() req: Request_type, @Param("postId") postId: string) {
     const id = req["user"]["sub"];
-    return this.postsService.likePost(id, status, postId);
+    return this.postsService.likePost(id, postId);
   }
 }
