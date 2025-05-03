@@ -43,6 +43,18 @@ export class UserController {
     return this.userService.changePassword(id, dto);
   }
 
+  @Get("getSubscribers")
+  @ApiOperation({ summary: "Get user's subscribers" })
+  GetSubscribers(@Query("userId") userId: string) {
+    return this.userService.getSubscribers(userId);
+  }
+
+  @Get("getSubscriptions")
+  @ApiOperation({ summary: "Get user's subscriptions" })
+  GetSubscriptions(@Query("userId") userId: string) {
+    return this.userService.getSubscriptions(userId);
+  }
+
   @Post("avatar")
   @ApiOperation({
     summary: "Change user's avatar",

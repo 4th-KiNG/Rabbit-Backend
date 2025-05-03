@@ -84,6 +84,18 @@ export class AuthService {
       true
       //(await this.redisService.get(dto.email)).split(":")[1].slice(0, 1) === "1"
     ) {
+      if (dto.username.length <= 2) {
+        throw new HttpException(
+          "Длина имени должна быть не менее 3 символов!",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (dto.password.length <= 4) {
+        throw new HttpException(
+          "Длина пароля должна быть не менее 5 символов!",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       const user = await this.userService.create(dto);
       const payload = { sub: user.id, username: user.username };
       return {

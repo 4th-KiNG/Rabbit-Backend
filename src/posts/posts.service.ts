@@ -121,17 +121,10 @@ export class PostsService {
       );
   }
 
-  async likePost(userId: string, status: "like" | "dislike", postId: string) {
-    let likePost = await this.postsRepository.findOneBy({ id: postId });
-    if (status == "like") {
-      likePost.likesId.push(userId);
-    } else {
-      likePost = {
-        ...likePost,
-        likesId: likePost.likesId.filter((id) => id !== userId),
-      };
-    }
+  async likePost(userId: string, postId: string) {
+    const likePost = await this.postsRepository.findOneBy({ id: postId });
+    if (!likePost.likesId.includes(userId)) likePost.likesId.push(userId);
+    else likePost.likesId = likePost.likesId.filter((id) => id != userId);
     return await this.postsRepository.save(likePost);
   }
 }
-
