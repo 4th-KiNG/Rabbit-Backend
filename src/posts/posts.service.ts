@@ -66,10 +66,25 @@ export class PostsService {
     return await this.postsRepository.save(newPost);
   }
 
-  async getPosts(ownerId?: string, search_string?: string, page?: number) {
-    const query = this.postsRepository
-      .createQueryBuilder("post")
-      .orderBy("post.createDate", "DESC");
+  async getPosts(
+    userId: string,
+    ownerId?: string,
+    search_string?: string,
+    page?: number,
+  ) {
+    const query = this.postsRepository.createQueryBuilder("post");
+    const user = await this.userService.getById(userId);
+
+    if (user.subscriptionsId && user.subscriptionsId.length > 0) {
+      query.addOrderBy(
+        `CASE WHEN post.ownerId IN (${user.subscriptionsId
+          .map((sub) => `'${sub}'`)
+          .join(",")}) THEN 0 ELSE 1 END`,
+        "ASC",
+      );
+    }
+
+    query.addOrderBy("post.createDate", "DESC");
 
     if (ownerId) query.where("post.ownerId = :ownerId", { ownerId });
 

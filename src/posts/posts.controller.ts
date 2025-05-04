@@ -45,11 +45,13 @@ export class PostsController {
   })
   @UseGuards(JwtGuard)
   GetPosts(
+    @Request() req: Request_type,
     @Query("ownerId") ownerId: string,
     @Query("search_string") search_string: string,
     @Query("page") page?: number,
   ) {
-    return this.postsService.getPosts(ownerId, search_string, page);
+    const id = req["user"]["sub"];
+    return this.postsService.getPosts(id, ownerId, search_string, page);
   }
 
   @Get(":postId")
