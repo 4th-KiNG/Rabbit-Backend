@@ -23,6 +23,11 @@ export class AuthService {
         "Пользователя с такой почтой не существует",
         HttpStatus.NOT_FOUND,
       );
+    if (user.username === process.env.ADMIN_USERNAME)
+      throw new HttpException(
+        "Админ не может менять пароль",
+        HttpStatus.BAD_REQUEST,
+      );
     const newPassword = `${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}${randomInt(10)}`;
     user.password = await encryptPassword(newPassword);
     await this.mailerService
@@ -80,32 +85,23 @@ export class AuthService {
   }
 
   async signUp(dto: CreateUserDto) {
-    if (
-      true
-      //(await this.redisService.get(dto.email)).split(":")[1].slice(0, 1) === "1"
-    ) {
-      if (dto.username.length <= 2) {
-        throw new HttpException(
-          "Длина имени должна быть не менее 3 символов!",
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      if (dto.password.length <= 4) {
-        throw new HttpException(
-          "Длина пароля должна быть не менее 5 символов!",
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const user = await this.userService.create(dto);
-      const payload = { sub: user.id, username: user.username };
-      return {
-        access_token: await this.jwtService.signAsync(payload),
-      };
-    } else
+    if (dto.username.length <= 2) {
       throw new HttpException(
-        "Неверный код верификации",
+        "Длина имени должна быть не менее 3 символов!",
         HttpStatus.BAD_REQUEST,
       );
+    }
+    if (dto.password.length <= 4) {
+      throw new HttpException(
+        "Длина пароля должна быть не менее 5 символов!",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const user = await this.userService.create(dto);
+    const payload = { sub: user.id, username: user.username };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 
   async signIn(dto: SignInDto) {

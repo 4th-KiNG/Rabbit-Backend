@@ -7,7 +7,7 @@ export class CreateUserDto {
   @ApiProperty({ example: "Jose", description: "User's name" })
   username: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: "Некорректная почта" })
   @ApiProperty({ example: "123@ya.ru", description: "User's email" })
   email: string;
 
@@ -17,7 +17,7 @@ export class CreateUserDto {
 }
 
 export class SignInDto {
-  @IsEmail()
+  @IsEmail({}, { message: "Некорректная почта" })
   @ApiProperty({ example: "123@ya.ru", description: "User's email" })
   email: string;
 
