@@ -91,6 +91,12 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    if (dto.username.length >= 25) {
+      throw new HttpException(
+        "Длина имени должна быть не более 25 символов!",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     if (dto.password.length <= 4) {
       throw new HttpException(
         "Длина пароля должна быть не менее 5 символов!",
