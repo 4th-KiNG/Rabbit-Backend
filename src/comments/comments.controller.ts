@@ -25,35 +25,17 @@ export class CommentsController {
   @ApiOperation({ summary: "like or unlike post" })
   @Patch("like")
   @UseGuards(JwtGuard)
-  Like(
-    @Request() req: Request_type,
-    @Body() data: { commentId: string; parentType: string },
-  ) {
+  Like(@Request() req: Request_type, @Body() data: { commentId: string }) {
     const commentId = data.commentId;
-    const parentType = data.parentType;
     const id = req["user"]["sub"];
-    return this.commentsService.addLike(
-      commentId,
-      parentType.toLowerCase() == "comment"
-        ? ParentType.Comment
-        : ParentType.Post,
-      id,
-    );
+    return this.commentsService.addLike(commentId, id);
   }
 
   @ApiOperation({ summary: "like or unlike post" })
   @Get("likes")
   @UseGuards(JwtGuard)
-  GetLikes(
-    @Query("commentId") commentId: string,
-    @Query("parentType") parentType: string,
-  ) {
-    return this.commentsService.getLikes(
-      commentId,
-      parentType.toLowerCase() == "comment"
-        ? ParentType.Comment
-        : ParentType.Post,
-    );
+  GetLikes(@Query("commentId") commentId: string) {
+    return this.commentsService.getLikes(commentId);
   }
 
   @ApiOperation({ summary: "create comment" })

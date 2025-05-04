@@ -79,12 +79,12 @@ export class PostsService {
         const searchConditions = words
           .map((word) => {
             return `(
-            post.tags LIKE '%${word}%' OR 
-            post.title LIKE '%${word}%' OR 
-            post.text LIKE '%${word}%'
+            LOWER(post.tags) LIKE '%${word.toLowerCase()}%' OR 
+            LOWER(post.title) LIKE '%${word.toLowerCase()}%' OR 
+            LOWER(post.text) LIKE '%${word.toLowerCase()}%'
           )`;
           })
-          .join(" AND ");
+          .join(" OR ");
 
         query.andWhere(`(${searchConditions})`);
       }
@@ -116,7 +116,10 @@ export class PostsService {
 
   async deletePost(userId: string, postId: string) {
     const delPost = await this.postsRepository.findOneBy({ id: postId });
-    if (delPost.ownerId === userId) {
+    const isAdmin =
+      (await this.userService.getById(userId)).username ===
+      process.env.ADMIN_USERNAME;
+    if (delPost.ownerId === userId || isAdmin) {
       await this.postsRepository.delete(delPost.id);
       return "ok";
     } else

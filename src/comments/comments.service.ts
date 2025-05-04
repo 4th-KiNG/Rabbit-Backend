@@ -32,21 +32,18 @@ export class CommentsService {
     return await this.commentRepository.save(newComment);
   }
 
-  async addLike(commentId: string, parentType: ParentType, userId: string) {
+  async addLike(commentId: string, userId: string) {
     const comment = await this.commentRepository.findOneBy({
       id: commentId,
-      parentType: parentType,
     });
-    console.log(comment);
     if (!comment.likesId.includes(userId)) comment.likesId.push(userId);
     else comment.likesId = comment.likesId.filter((id) => id != userId);
     return this.commentRepository.save(comment);
   }
 
-  async getLikes(commentId: string, parentType: ParentType) {
+  async getLikes(commentId: string) {
     const comment = await this.commentRepository.findOneBy({
       id: commentId,
-      parentType: parentType,
     });
     return comment?.likesId ?? [];
   }
@@ -60,7 +57,10 @@ export class CommentsService {
       id: commentId,
       parentType: parentType,
     });
-    if (toDelete.ownerId != userId)
+    const isAdmin =
+      (await this.userService.getById(userId)).username ===
+      process.env.ADMIN_USERNAME;
+    if (toDelete.ownerId != userId && !isAdmin)
       throw new HttpException(
         "Недостаточно прав для удаления",
         HttpStatus.BAD_REQUEST,

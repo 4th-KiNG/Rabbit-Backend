@@ -46,7 +46,17 @@ export class UserService {
 
   async changePassword(id: string, dto: ChangePasswordDto) {
     const user = await this.userRepository.findOneBy({ id: id });
-    //  console.log(user);
+    if (user.username === process.env.ADMIN_USERNAME)
+      throw new HttpException(
+        "Админ не может менять пароль",
+        HttpStatus.BAD_REQUEST,
+      );
+    if (dto.newPassword.length <= 4) {
+      throw new HttpException(
+        "Длина пароля должна быть не менее 5 символов!",
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     if (
       !(await checkPassword(
         { email: user.email, password: dto.oldPassword },
